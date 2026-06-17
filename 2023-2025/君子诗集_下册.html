@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>君子的诗 · 下册 · 2023-2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#5c4a32;
+    --ink-rgb:92,74,50;
+    --paper:#f5edd6;
+    --paper-rgb:245,237,214;
+    --serif-en:"Playfair Display",Georgia,serif;
+    --serif-zh:"Noto Serif SC",serif;
+    --sans-zh:"Noto Sans SC",sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#f5edd6;color:var(--ink);font-family:var(--sans-zh);-webkit-font-smoothing:antialiased}
+
+  canvas.bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;transition:opacity 1.2s ease}
+  canvas#bg-dark{opacity:1}
+
+  #app{position:fixed;inset:0;z-index:10;overflow:hidden}
+  
+  /* 左侧悬浮目录面板 */
+  #toc-panel{position:fixed;left:0;top:0;width:340px;height:100vh;background:rgba(240,232,215,0.96);backdrop-filter:blur(12px);border-right:1px solid rgba(92,74,50,0.1);z-index:30;transform:translateX(-340px);transition:transform 0.3s ease;display:flex;flex-direction:column}
+  #toc-panel.open{transform:translateX(0)}
+  #toc-panel .toc-header{padding:20px 24px;border-bottom:1px solid rgba(92,74,50,0.1);display:flex;justify-content:space-between;align-items:center}
+  #toc-panel .toc-header h2{font-family:var(--serif-zh);font-size:18px;font-weight:700;margin:0}
+  #toc-panel .toc-close{background:rgba(92,74,50,0.1);border:1px solid rgba(92,74,50,0.18);color:var(--ink);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;transition:all 0.3s;display:flex;align-items:center;justify-content:center}
+  #toc-panel .toc-close:hover{background:rgba(92,74,50,0.18)}
+  #toc-panel .toc-search{padding:16px 24px;border-bottom:1px solid rgba(92,74,50,0.1)}
+  #toc-panel .toc-search input{width:100%;padding:10px 16px;font-size:14px;border:1px solid rgba(92,74,50,0.18);border-radius:20px;background:rgba(92,74,50,0.06);color:var(--ink);font-family:var(--sans-zh);outline:none;transition:all 0.3s}
+  #toc-panel .toc-search input:focus{background:rgba(92,74,50,0.1);border-color:rgba(92,74,50,0.35)}
+  #toc-panel .toc-search input::placeholder{color:rgba(92,74,50,0.5)}
+  #toc-panel .toc-content{flex:1;overflow-y:auto;padding:16px 0}
+  #toc-panel .toc-chapter{margin-bottom:8px}
+  #toc-panel .toc-chapter-header{padding:10px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.2s;border-radius:0 8px 8px 0}
+  #toc-panel .toc-chapter-header:hover{background:rgba(92,74,50,0.06)}
+  #toc-panel .toc-chapter-header.active{background:rgba(92,74,50,0.12)}
+  #toc-panel .toc-chapter-name{font-family:var(--serif-zh);font-size:15px;font-weight:600}
+  #toc-panel .toc-chapter-count{font-size:12px;opacity:0.6;background:rgba(92,74,50,0.1);padding:2px 8px;border-radius:10px}
+  #toc-panel .toc-poems{display:none;padding:0 24px 8px 32px}
+  #toc-panel .toc-poems.show{display:block}
+  #toc-panel .toc-poem{padding:8px 12px;margin-bottom:4px;border-radius:6px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+  #toc-panel .toc-poem:hover{background:rgba(92,74,50,0.08)}
+  #toc-panel .toc-poem.active{background:rgba(92,74,50,0.18)}
+  #toc-panel .toc-poem-title{font-family:var(--serif-zh);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #toc-panel .toc-poem-date{font-size:11px;opacity:0.5;margin-left:8px}
+  #toc-btn{position:fixed;left:20px;top:20px;width:44px;height:44px;background:rgba(240,232,215,0.9);backdrop-filter:blur(8px);border:1px solid rgba(92,74,50,0.18);border-radius:50%;color:var(--ink);cursor:pointer;z-index:25;font-size:16px;transition:all 0.3s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(92,74,50,0.18)}
+  #toc-btn:hover{background:rgba(92,74,50,0.18);transform:scale(1.1)}
+  #toc-panel.open ~ #toc-btn{opacity:0;pointer-events:none}
+  #toc-overlay{position:fixed;inset:0;background:rgba(92,74,50,0.22);z-index:20;opacity:0;pointer-events:none;transition:opacity 0.3s}
+  #toc-overlay.show{opacity:1;pointer-events:all}
+  
+  .view{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 0.6s ease;pointer-events:none}
+  .view.active{opacity:1;pointer-events:all}
+
+  #home-view{display:flex;flex-direction:column;padding:8vh 8vw;background:rgba(var(--ink-rgb),0.04);backdrop-filter:blur(3px);overflow-y:auto}
+
+  .hero-section{text-align:center;padding:8vh 0;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:60vh}
+  .hero-kicker{font-family:var(--sans-zh);font-size:max(16px,1.4vw);letter-spacing:0.4em;opacity:0.55;margin-bottom:2vh}
+  .hero-title{font-family:var(--serif-zh);font-weight:900;font-size:clamp(56px, 13vw, 140px);line-height:1.05;letter-spacing:0.04em;margin-bottom:1.5vh}
+  .hero-subtitle{font-family:var(--serif-zh);font-weight:400;font-size:clamp(24px, 4vw, 52px);line-height:1.3;opacity:0.6;margin-bottom:6vh;letter-spacing:0.08em}
+  .hero-desc{font-family:var(--sans-zh);font-weight:300;font-size:clamp(16px, 2vw, 26px);line-height:2.2;opacity:0.78;max-width:min(60vw, 780px);margin:0 auto;text-align:center}
+
+  .stats-row{display:flex;justify-content:space-around;margin:6vh 0;padding:4vh 0;border-top:1px solid rgba(92,74,50,0.22);border-bottom:1px solid rgba(92,74,50,0.22)}
+  .stat-item{text-align:center}
+  .stat-num{font-family:var(--serif-en);font-weight:800;font-size:clamp(44px, 7vw, 96px);line-height:0.95}
+  .stat-label{font-family:var(--sans-zh);font-size:max(15px,1.2vw);opacity:0.65;margin-top:1.2vh;letter-spacing:0.12em}
+
+  .search-section{margin:4vh 0}
+  .search-box{position:relative;max-width:600px;margin:0 auto}
+  .search-input{width:100%;padding:18px 24px;font-size:clamp(14px, 1.2vw, 18px);border:2px solid rgba(92,74,50,0.45);border-radius:30px;background:rgba(92,74,50,0.12);color:var(--ink);font-family:var(--sans-zh);outline:none;transition:all 0.3s}
+  .search-input:focus{background:rgba(92,74,50,0.18);border-color:rgba(92,74,50,0.65)}
+  .search-input::placeholder{color:rgba(92,74,50,0.65)}
+  .search-results{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(245,237,214,0.98);border:1px solid rgba(92,74,50,0.22);border-radius:10px;margin-top:8px;max-height:400px;overflow-y:auto;box-shadow:0 10px 30px rgba(92,74,50,0.18);z-index:100}
+  .search-results.show{display:block}
+  .search-result-item{padding:15px 20px;border-bottom:1px solid rgba(92,74,50,0.18);cursor:pointer;transition:background 0.2s;color:var(--ink)}
+  .search-result-item:hover{background:rgba(92,74,50,0.08)}
+  .search-result-title{font-family:var(--serif-zh);font-weight:600;font-size:1.1em;margin-bottom:4px}
+  .search-result-preview{font-family:var(--sans-zh);font-size:0.9em;opacity:0.7}
+
+  .chapters-section{margin-top:4vh}
+  .chapters-title{font-family:var(--serif-zh);font-weight:700;font-size:clamp(20px, 2.5vw, 32px);margin-bottom:3vh;text-align:center}
+  .chapters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:0 2vw}
+
+  .chapter-card{background:rgba(92,74,50,0.06);padding:30px;border-radius:12px;cursor:pointer;transition:all 0.3s;border:1px solid rgba(92,74,50,0.18)}
+  .chapter-card:hover{background:rgba(92,74,50,0.12);transform:translateY(-5px);box-shadow:0 10px 30px rgba(92,74,50,0.1)}
+  .chapter-name{font-family:var(--serif-zh);font-weight:700;font-size:clamp(18px, 1.8vw, 24px);margin-bottom:8px}
+  .chapter-count{font-family:var(--sans-zh);font-size:0.95em;opacity:0.7}
+  .chapter-desc{font-family:var(--sans-zh);font-size:0.85em;opacity:0.6;margin-top:8px}
+
+  #chapter-view{display:flex;flex-direction:column}
+  .chapter-header{display:flex;justify-content:space-between;align-items:center;padding:20px 30px;background:rgba(var(--ink-rgb),0.05);backdrop-filter:blur(8px);border-bottom:1px solid rgba(92,74,50,0.18)}
+  .back-btn{background:rgba(92,74,50,0.22);border:1px solid rgba(92,74,50,0.35);padding:12px 24px;border-radius:25px;color:var(--ink);cursor:pointer;font-family:var(--sans-zh);transition:all 0.3s;font-size:clamp(12px, 1vw, 16px)}
+  .back-btn:hover{background:rgba(92,74,50,0.25)}
+  .chapter-title{font-family:var(--serif-zh);font-weight:700;font-size:clamp(20px, 2.5vw, 32px)}
+
+  .poems-list{flex:1;overflow-y:auto;padding:30px;background:rgba(var(--ink-rgb),0.03);backdrop-filter:blur(2px)}
+  .poems-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+
+  .poem-card{background:rgba(92,74,50,0.06);padding:25px;border-radius:10px;cursor:pointer;transition:all 0.3s;border-left:3px solid rgba(92,74,50,0.35)}
+  .poem-card:hover{background:rgba(92,74,50,0.12);transform:translateX(5px)}
+  .poem-title{font-family:var(--serif-zh);font-weight:600;font-size:clamp(14px, 1.15em, 18px);margin-bottom:8px}
+  .poem-preview{font-family:var(--sans-zh);font-size:0.9em;opacity:0.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .poem-date{font-family:var(--sans-zh);font-size:0.8em;opacity:0.5;margin-top:6px;margin-bottom:6px;color:var(--ink);letter-spacing:0.05em}
+  .poem-annotation-tag{font-family:var(--sans-zh);font-size:0.8em;color:#c9a96e;margin-top:8px;opacity:0.8}
+
+  #detail-view{display:flex;flex-direction:column;background:rgba(var(--ink-rgb),0.03);backdrop-filter:blur(4px);overflow:hidden}
+
+  .detail-header{display:flex;justify-content:space-between;align-items:center;padding:20px 30px;background:rgba(var(--ink-rgb),0.06);backdrop-filter:blur(10px);border-bottom:1px solid rgba(92,74,50,0.18)}
+  .nav-btn{background:rgba(92,74,50,0.22);border:1px solid rgba(92,74,50,0.35);padding:10px 20px;border-radius:25px;color:var(--ink);cursor:pointer;font-family:var(--sans-zh);transition:all 0.3s;font-size:clamp(12px, 0.95em, 16px)}
+  .nav-btn:hover{background:rgba(92,74,50,0.25)}
+  .nav-btn:disabled{opacity:0.3;cursor:not-allowed}
+  .detail-title{font-family:var(--serif-zh);font-weight:600;font-size:clamp(13px, 1vw, 15px);letter-spacing:0.15em;opacity:0.8;position:absolute;right:30px;top:50%;transform:translateY(-50%);padding:6px 14px;border:1px solid rgba(92,74,50,0.22);border-radius:16px;background:rgba(92,74,50,0.06)}
+
+  .detail-content{flex:1;overflow-y:auto;padding:clamp(30px, 5vh, 60px) clamp(20px, 6vw, 100px)}
+  .verse-container{max-width:800px;margin:0 auto;text-align:center;position:relative}
+
+  .poem-heading{font-family:var(--serif-zh);font-size:clamp(28px, 4vw, 48px);font-weight:700;margin-bottom:1.5vh;text-align:center}
+  .poem-date{font-family:var(--sans-zh);font-size:clamp(12px, 1vw, 14px);letter-spacing:0.15em;opacity:0.7;text-align:center;margin-bottom:4vh;color:rgba(61,46,26,0.7)}
+
+  /* ============================================================
+     固化代码：诗句行样式（含换行规则）
+     功能：控制诗句段落的排版和换行
+     规则：
+       - word-break: keep-all — 禁止中文中间断行（避免孤字）
+       - overflow-wrap: break-word — 长词溢出时断行
+       - text-wrap: pretty — 智能排版，保持段落美观
+     注意：修改换行逻辑时请勿改动此CSS
+     ============================================================ */
+  .verse-line{font-family:var(--serif-zh);font-size:clamp(18px, 2.2vw, 28px);line-height:2.4;text-align:center;margin:1.5vh 0;opacity:0.95;letter-spacing:0.05em;word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty}
+
+  .annotation-divider{display:flex;align-items:center;justify-content:center;margin:5vh 0;position:relative}
+  .annotation-divider::before{content:'';flex:1;height:1px;background:rgba(160,130,70,0.2);margin-right:20px}
+  .annotation-divider::after{content:'';flex:1;height:1px;background:rgba(160,130,70,0.2);margin-left:20px}
+  .annotation-divider-text{color:rgba(160,130,70,0.9);font-family:var(--serif-zh);font-size:clamp(12px, 1vw, 14px);letter-spacing:0.2em;padding:6px 16px;border:1px solid rgba(160,130,70,0.3);border-radius:16px;background:rgba(160,130,70,0.06);white-space:nowrap}
+
+  .annotation-box{background:rgba(160,130,70,0.06);border:1px solid rgba(160,130,70,0.25);border-radius:16px;padding:clamp(24px, 3vh, 40px) clamp(20px, 4vw, 60px);text-align:left}
+  .annotation-text{font-family:var(--sans-zh);font-size:clamp(13px, 1.05vw, 16px);line-height:2;opacity:0.85;color:#5c4a32}
+  .annotation-text p{margin-bottom:1.5vh;text-indent:2em}
+  .annotation-text p:last-child{margin-bottom:0}
+
+  .detail-nav{display:flex;justify-content:space-between;padding:20px 30px;background:rgba(var(--ink-rgb),0.06);border-top:1px solid rgba(92,74,50,0.18)}
+
+  #hint{position:fixed;bottom:2.6vh;right:2.6vw;z-index:30;font-family:var(--sans-zh);font-size:11px;letter-spacing:0.15em;opacity:0.5;color:var(--ink)}
+
+  @media (max-width:768px){
+    #home-view{padding:6vh 5vw}
+    .hero-title{font-size:clamp(32px, 14vw, 60px)}
+    .hero-subtitle{font-size:clamp(16px, 5vw, 28px)}
+    .hero-desc{font-size:clamp(12px, 3.5vw, 16px);max-width:90vw}
+    .stats-row{flex-direction:column;gap:3vh}
+    .chapters-grid{grid-template-columns:1fr}
+  .detail-content{padding:20px}
+    .verse-line{font-size:clamp(16px, 4vw, 20px);line-height:2}
+    .poem-heading{font-size:clamp(22px, 6vw, 32px)}
+    .annotation-box{padding:20px}
+  }
+
+  /* 音乐播放器 */
+  .music-player{position:fixed;bottom:24px;right:24px;z-index:1000;background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:#f5edd6;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(61,46,26,0.4);cursor:pointer;transition:all 0.3s}
+  .music-player:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(61,46,26,0.5)}
+  .music-player .music-info{display:flex;align-items:center;gap:8px}
+  .music-player .music-icon{font-size:20px;animation:none}
+  .music-player .music-icon.playing{animation:spin 3s linear infinite}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .music-player .music-title{font-size:13px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .music-player .music-btn{background:rgba(245,237,214,0.15);border:none;color:#f5edd6;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:all 0.3s;font-family:var(--sans-zh)}
+  .music-player .music-btn:hover{background:rgba(245,237,214,0.3)}
+
+</style>
+</head>
+<body>
+
+<canvas id="bg-dark" class="bg"></canvas>
+
+<!-- 目录面板 -->
+<div id="toc-panel">
+  <div class="toc-header">
+    <h2>目录</h2>
+    <button class="toc-close" onclick="toggleTOC()">×</button>
+  </div>
+  <div class="toc-search">
+    <input type="text" placeholder="搜索诗篇..." id="tocSearchInput" oninput="filterTOC()">
+  </div>
+  <div class="toc-content" id="tocContent"></div>
+</div>
+
+<!-- 目录按钮 -->
+<button id="toc-btn" onclick="toggleTOC()" title="打开目录">☰</button>
+
+<!-- 遮罩层 -->
+<div id="toc-overlay" onclick="toggleTOC()"></div>
+
+<div id="app">
+  <!-- 首页视图 -->
+  <div id="home-view" class="view active">
+    <div class="hero-section">
+      <div class="hero-kicker">诗人 刘 方 君</div>
+      <h1 class="hero-title">君子的诗</h1>
+      <h2 class="hero-subtitle">下册 · 2023-2025</h2>
+      <p class="hero-desc">
+        一个矿山工人的诗意人生。在钢铁与矿石之间，<br>
+        他用诗歌浇灌心灵的花园。
+      </p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num" id="statPoems">0</div>
+        <div class="stat-label">完整诗篇</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statChapters">-</div>
+        <div class="stat-label">章节</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statChars">0</div>
+        <div class="stat-label">总字数</div>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索诗篇标题或诗句...">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+
+    <div class="chapters-section">
+      <h3 class="chapters-title">浏览章节</h3>
+      <div class="chapters-grid" id="chaptersGrid"></div>
+    </div>
+  </div>
+
+  <!-- 章节视图 -->
+  <div id="chapter-view" class="view">
+    <div class="chapter-header">
+      <button class="back-btn" onclick="showView('home')">← 返回首页</button>
+      <div class="chapter-title" id="chapterTitle"></div>
+    </div>
+    <div class="poems-list">
+      <div class="poems-grid" id="poemsGrid"></div>
+    </div>
+  </div>
+
+  <!-- 详情视图 -->
+  <div id="detail-view" class="view">
+    <div class="detail-header">
+      <button class="nav-btn" onclick="showView('chapter')">← 返回列表</button>
+      <div class="detail-title" id="detailTitle"></div>
+      <div></div>
+    </div>
+    <div class="detail-content">
+      <div class="verse-container" id="verseContainer"></div>
+    </div>
+    <div class="detail-nav">
+      <button class="nav-btn" id="prevBtn" onclick="navigatePoem(-1)">← 上一首</button>
+      <button class="nav-btn" id="nextBtn" onclick="navigatePoem(1)">下一首 →</button>
+    </div>
+  </div>
+</div>
+
+<div id="hint">← → 翻页 · ESC 首页</div>
+
+<!-- 外置数据文件（修改此文件即可更新内容，无需改HTML） -->
+<script src="君子诗集_下册_data.js"></script>
+
+<script>
+// ========== WebGL 背景 ==========
+const VS = `attribute vec2 position;void main(){gl_Position=vec4(position,0.0,1.0);}`;
+const FS_DARK = `precision highp float;
+uniform vec2 u_resolution;uniform float u_time;uniform vec2 u_mouse;
+vec3 palette(float t,vec3 a,vec3 b,vec3 c,vec3 d){return a+b*cos(6.28318*(c*t+d));}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  vec2 p=uv*2.0-1.0;p.x*=u_resolution.x/u_resolution.y;
+  vec2 m=u_mouse*2.0-1.0;m.x*=u_resolution.x/u_resolution.y;
+  float md=length(p-m);
+  float mr=sin(md*40.0-u_time*5.0)*exp(-md*0.8);p+=mr*0.5;
+  vec2 p0=p;
+  for(float i=1.0;i<4.0;i++){
+    p.x+=0.1/i*sin(i*3.0*p.y+u_time*0.4)+0.05;
+    p.y+=0.1/i*cos(i*2.0*p.x+u_time*0.3)-0.05;
+  }
+  float r=length(p);float ang=atan(p.y,p.x);
+  vec3 a=vec3(0.90,0.86,0.78);
+  vec3 b=vec3(0.02,0.015,0.008);
+  vec3 c=vec3(1.0,1.0,1.0);
+  vec3 d=vec3(0.12,0.08,0.04);
+  vec3 col=palette(r*1.5+p0.x*0.5+u_time*0.1,a,b,c,d);
+  float disp=sin(r*25.0-u_time*1.5+ang*2.0)*0.5+0.5;
+  col+=vec3(disp*0.015,disp*0.01,disp*0.02);
+  float hi=pow(sin(p.x*4.0+p.y*3.0+u_time)*0.5+0.5,8.0);
+  col+=hi*0.08;
+  vec3 base=vec3(0.96,0.93,0.85);
+  col=mix(base,col,0.15);
+  gl_FragColor=vec4(col,1.0);
+}`;
+
+const mouse={x:0.5,y:0.5};
+addEventListener('mousemove',e=>{mouse.x=e.clientX/innerWidth;mouse.y=e.clientY/innerHeight});
+
+/* ============================================================
+   固化代码：WebGL 背景初始化
+   功能：编译着色器、创建缓冲、设置 uniform 变量
+   注意：请勿改动
+   ============================================================ */
+function bootGL(canvasId,fsSrc){
+  const canvas=document.getElementById(canvasId);
+  const gl=canvas.getContext('webgl',{alpha:false,antialias:true});
+  if(!gl)return ()=>false;
+  const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh};
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mk(gl.VERTEX_SHADER,VS));
+  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fsSrc));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const pos=gl.getAttribLocation(prog,'position');
+  gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+  const lRes=gl.getUniformLocation(prog,'u_resolution');
+  const lT=gl.getUniformLocation(prog,'u_time');
+  const lM=gl.getUniformLocation(prog,'u_mouse');
+  const resize=()=>{
+    const d=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=innerWidth*d;canvas.height=innerHeight*d;
+    gl.viewport(0,0,canvas.width,canvas.height);
+  };
+  addEventListener('resize',resize);resize();
+  return (tSec)=>{
+    gl.uniform2f(lRes,canvas.width,canvas.height);
+    gl.uniform1f(lT,tSec);
+    gl.uniform2f(lM,mouse.x,mouse.y);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    return true;
+  };
+}
+
+let drawDark,glT0,glRAF;
+
+/* ============================================================
+   固化代码：WebGL 背景引擎
+   功能：初始化并启动 WebGL 着色器背景动画
+   注意：请勿改动
+   ============================================================ */
+function startGL(){
+  if(!drawDark)drawDark=bootGL('bg-dark',FS_DARK);
+  glT0=Date.now();
+  function loop(){
+    const t=(Date.now()-glT0)/1000;
+    drawDark(t);
+    glRAF=requestAnimationFrame(loop);
+  }
+  glRAF=requestAnimationFrame(loop);
+}
+startGL();
+
+  /* ============================================================
+     全局状态变量（必须在任何函数使用之前声明）
+     ============================================================ */
+  let currentView = 'home';
+  let currentChapterIndex = 0;
+  let currentPoemIndex = 0;
+  let currentPoemGlobalIndex = 0;
+
+  /* ============================================================
+     固化代码：视图切换路由
+     功能：在 home / chapter / detail 三个视图间切换
+     注意：请勿改动
+     ============================================================ */
+  function showView(view){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(view+'-view').classList.add('active');
+    currentView = view;
+  }
+
+// ========== 首页章节卡片 ==========
+function renderChapters(){
+  const grid = document.getElementById('chaptersGrid');
+  grid.innerHTML = '';
+  chaptersData.forEach((chapter,i)=>{
+    const card = document.createElement('div');
+    card.className = 'chapter-card';
+    card.onclick = ()=>showChapter(i);
+    const countText = chapter.name === '序' || chapter.name === '后记' ? '' : `共 ${chapter.poems.length} 首`;
+    card.innerHTML = `
+      <div class="chapter-name">${chapter.name}</div>
+      <div class="chapter-count">${countText}</div>
+      <div class="chapter-desc">${chapter.desc || ''}</div>
+    `;
+    grid.appendChild(card);
+  });
+  // 更新统计数字（排除序和附录，仅统计正文诗篇）
+  const mainPoems = poemsData.filter(p => p.volume !== '序' && p.volume !== '附录' && p.volume !== '后记');
+  document.getElementById('statPoems').textContent = mainPoems.length;
+  // 统计章节数（排除序和附录和后记）
+  const chapterCount = chaptersData.filter(c => c.name !== '序' && c.name !== '附录' && c.name !== '后记').length;
+  document.getElementById('statChapters').textContent = chapterCount;
+  const totalChars = mainPoems.reduce((acc,p)=>{
+    const lines = (p.content && p.content.length > 0) ? p.content : (p.verses || []);
+    return acc + lines.reduce((vacc,v)=>vacc+v.length,0);
+  },0);
+  document.getElementById('statChars').textContent = totalChars.toLocaleString();
+}
+
+/* ============================================================
+   固化代码：序和后记专用渲染逻辑
+   说明：此函数独立封装，专门处理序/后记的排版展示。
+   注意：后续修改其他代码时，请勿改动此函数及调用位置。
+   ============================================================ */
+function renderPrefaceOrPostscript(poem, container){
+  // 标题（居中显示）
+  const title = document.createElement('h2');
+  title.textContent = poem.title;
+  title.style.textAlign = 'center';
+  title.style.fontSize = '36px';
+  title.style.marginBottom = '50px';
+  title.style.fontWeight = '700';
+  title.style.color = '#5c4a32';
+  container.appendChild(title);
+  
+  // 正文段落：最后2行作为落款，居右显示；其余左对齐
+  const verses = (poem.content && poem.content.length > 0) ? poem.content : (poem.verses || []);
+  const totalVerses = verses.length;
+  verses.forEach((text, idx) => {
+    const p = document.createElement('p');
+    p.textContent = text;
+    p.style.marginBottom = '20px';
+    if (idx >= totalVerses - 2) {
+      p.style.textAlign = 'right';
+      p.style.textIndent = '0';
+    } else {
+      p.style.textIndent = '2em';
+      p.style.textAlign = 'left';
+    }
+    container.appendChild(p);
+  });
+}
+
+// ========== 章节视图 ==========
+function showChapter(index){
+  currentChapterIndex = index;
+  const chapter = chaptersData[index];
+  document.getElementById('chapterTitle').textContent = chapter.name;
+
+  const list = document.querySelector('.poems-list');
+  list.innerHTML = '';
+
+  // 序和后记：直接全文显示，无需卡片列表
+  if(chapter.name === '序' || chapter.name === '后记'){
+    const poem = chapter.poems[0];
+    const container = document.createElement('div');
+    container.style.maxWidth = '800px';
+    container.style.width = '100%';
+    container.style.margin = '0 auto';
+    container.style.padding = '40px 20px';
+    container.style.lineHeight = '2.2';
+    container.style.fontSize = '18px';
+    container.style.color = '#5c4a32';
+    container.style.fontFamily = '"Noto Serif SC", serif';
+    container.style.gridColumn = '1 / -1';
+    
+    // 调用固化的序/后记渲染函数
+    renderPrefaceOrPostscript(poem, container);
+    
+    list.appendChild(container);
+    showView('chapter');
+    return;
+  }
+
+  // 普通诗歌：创建网格容器
+  const grid = document.createElement('div');
+  grid.className = 'poems-grid';
+  grid.id = 'poemsGrid';
+  
+  chapter.poems.forEach((poem,i)=>{
+    const card = document.createElement('div');
+    card.className = 'poem-card';
+    card.onclick = ()=>showPoemDetail(index,i);
+    // 使用 content 字段作为预览，回退到 verses
+    const content = (poem.content && poem.content.length > 0) ? poem.content : (poem.verses || []);
+    const preview = content && content[0] ? content[0].substring(0,30)+'...' : '';
+    // 使用 annotation 字段检测注释
+    const hasAnno = poem.annotation ? '<div class="poem-annotation-tag">※ 含注释</div>' : '';
+    const date = poem.date ? `<div class="poem-date">${poem.date}</div>` : '';
+    card.innerHTML = `
+      <div class="poem-title">${poem.title}</div>
+      ${date}
+      <div class="poem-preview">${preview}</div>
+      ${hasAnno}
+    `;
+    grid.appendChild(card);
+  });
+
+  list.appendChild(grid);
+  showView('chapter');
+}
+
+/* ============================================================
+   固化代码：智能分段算法
+   功能：自动检测古典诗词 vs 现代诗/散文，按标点逻辑换行
+   规则：
+     - 句长均匀（方差<80）且>=4句 → 古典诗词，每2句一组
+     - 否则 → 现代诗/散文，每句独立成行（按句号/问号/感叹号）
+     - 无标点或单段长文 → 保持原样（散文随笔）
+   注意：请勿改动
+   ============================================================ */
+function splitVerseUnified(verse){
+  verse = verse.trim();
+  if(!verse || verse.length <= 30) return [verse];
+
+  // 1. 先按真实换行符分割（\n 是转义序列，表示一个换行字符）
+  let paragraphs = verse.split('\n').map(p => p.trim()).filter(p => p);
+  if(paragraphs.length > 1) {
+    return paragraphs;
+  }
+
+  // 2. 单段按标点分句
+  return splitByPunctuation(verse);
+}
+
+// 按标点分句（辅助函数）
+function splitByPunctuation(verse){
+  const sentences = [];
+  let current = '';
+  for(let i = 0; i < verse.length; i++){
+    const char = verse[i];
+    current += char;
+    if('。！？'.includes(char)){
+      // 避免孤立配对符号：句末标点后的右闭合符号合并到前句
+      // 右闭合符号：」'）)】}》
+      const closingChars = [0x201D, 0x2019, 0xFF09, 0x0029, 0xFF5D, 0x007D, 0x300B];
+      // 左开启符号（遇到则停止合并，属于下一句）：「'（(【{《
+      const openingChars = [0x201C, 0x2018, 0xFF08, 0x0028, 0xFF5B, 0x007B, 0x300A];
+      while (i + 1 < verse.length) {
+        const nextCode = verse.charCodeAt(i + 1);
+        if (closingChars.includes(nextCode)) {
+          current += verse[i + 1];
+          i++;
+        } else if (openingChars.includes(nextCode)) {
+          // 左开启符号属于下一句，停止合并
+          break;
+        } else if (nextCode === 0x0022 || nextCode === 0x0027) {
+          // ASCII引号：判断是闭合还是开启
+          // 如果current中已有未配对的同类型引号，则为闭合；否则为开启
+          const quoteChar = String.fromCharCode(nextCode);
+          const countInCurrent = (current.match(new RegExp(quoteChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+          if (countInCurrent % 2 === 0) {
+            // 偶数个同类引号在current中 → 下一个是开启引号，属于下一句
+            break;
+          } else {
+            // 奇数个同类引号在current中 → 下一个是闭合引号，合并
+            current += verse[i + 1];
+            i++;
+          }
+        } else {
+          break;
+        }
+      }
+      sentences.push(current.trim());
+      current = '';
+    }
+  }
+  if(current.trim()) sentences.push(current.trim());
+
+  if(sentences.length <= 1) return [verse];
+
+  // 检测是否是古典诗词（句长均匀，每句长度相近）
+  const avgLen = sentences.reduce((a,b)=>a+b.length,0) / sentences.length;
+  const variance = sentences.reduce((a,b)=>a+Math.pow(b.length-avgLen,2),0) / sentences.length;
+  const isClassical = variance < 80 && sentences.length >= 4 && avgLen < 25;
+
+  if(isClassical){
+    const groups = [];
+    for(let i = 0; i < sentences.length; i += 2){
+      const group = sentences.slice(i, i + 2).join('');
+      if(i + 2 >= sentences.length && group.length <= 3 && groups.length > 0){
+        groups[groups.length - 1] += group;
+      } else {
+        groups.push(group);
+      }
+    }
+    return groups;
+  } else {
+    return sentences;
+  }
+}
+
+/* ============================================================
+   固化代码：注释提取器
+   功能：从诗句中提取内嵌注释，支持【】、（注释：）、（注释；）
+         及长度>15的小括号注释
+   注意：请勿改动
+   ============================================================ */
+function extractAnnotations(text){
+  const annotations = [];
+
+  // 1. 提取【】格式注释
+  let idx = text.indexOf('【');
+  while(idx !== -1){
+    const end = text.indexOf('】', idx);
+    if(end !== -1){
+      annotations.push(text.substring(idx + 1, end));
+      text = text.substring(0, idx) + text.substring(end + 1);
+      idx = text.indexOf('【');
+    } else break;
+  }
+
+  // 2. 提取（注释：...）格式
+  let match = text.match(/（注释：([^）]+)）/);
+  if(match){
+    annotations.push(match[1]);
+    text = text.replace(match[0], '');
+  }
+
+  // 3. 提取（注释；...）格式
+  match = text.match(/（注释；([^）]+)）/);
+  if(match){
+    annotations.push(match[1]);
+    text = text.replace(match[0], '');
+  }
+
+  // 4. 提取其他小括号注释（长度>15的）
+  const parenPattern = /（([^）]{15,})）/g;
+  let parenMatch;
+  while((parenMatch = parenPattern.exec(text)) !== null){
+    annotations.push(parenMatch[1]);
+    text = text.replace(parenMatch[0], '');
+  }
+
+  return {text: text.trim(), annotations: annotations};
+}
+
+// ========== 诗篇详情 ==========
+function showPoemDetail(chapterIndex,poemIndex){
+  currentChapterIndex = chapterIndex;
+  currentPoemIndex = poemIndex;
+
+  let accumulated = 0;
+  for(let i = 0; i < chapterIndex; i++){
+    accumulated += chaptersData[i].poems.length;
+  }
+  currentPoemGlobalIndex = accumulated + poemIndex;
+
+  const poem = chaptersData[chapterIndex].poems[poemIndex];
+  const chapterName = chaptersData[chapterIndex].name;
+  document.getElementById('detailTitle').textContent = `${chapterName} · ${poem.title}`;
+
+  renderPoemContent(chapterIndex, poemIndex);
+
+  updateNavButtons();
+  showView('detail');
+}
+
+function renderPoemContent(chapterIdx, poemIdx){
+  const poem = chaptersData[chapterIdx].poems[poemIdx];
+
+  const container = document.getElementById('verseContainer');
+  container.innerHTML = '';
+
+  // 添加标题
+  const heading = document.createElement('h1');
+  heading.className = 'poem-heading';
+  heading.textContent = poem.title;
+  container.appendChild(heading);
+
+  // 添加写作时间
+  if(poem.date){
+    const dateEl = document.createElement('div');
+    dateEl.className = 'poem-date';
+    dateEl.textContent = poem.date;
+    container.appendChild(dateEl);
+  }
+
+  // 使用新的结构化字段 (content/annotation/notes)，回退到旧版 verses
+  const content = (poem.content && poem.content.length > 0) ? poem.content : (poem.verses || []);
+  const annotation = poem.annotation;
+  const notes = poem.notes;
+
+  // 显示正文
+  if(content && content.length > 0){
+    content.forEach((text)=>{
+      const parts = splitVerseUnified(text);
+      parts.forEach((part)=>{
+        const p = document.createElement('p');
+        p.className = 'verse-line';
+        p.textContent = part;
+        container.appendChild(p);
+      });
+    });
+  }
+
+  // 显示注释（放入注释框）
+  if(annotation){
+    const divider = document.createElement('div');
+    divider.className = 'annotation-divider';
+    divider.innerHTML = '<span class="annotation-divider-text">注释</span>';
+    container.appendChild(divider);
+
+    const annoBox = document.createElement('div');
+    annoBox.className = 'annotation-box';
+    const annoText = document.createElement('div');
+    annoText.className = 'annotation-text';
+
+    const p = document.createElement('p');
+    p.textContent = annotation;
+    annoText.appendChild(p);
+
+    annoBox.appendChild(annoText);
+    container.appendChild(annoBox);
+  }
+
+  // 显示附注（不放入注释框，直接追加到正文末尾）
+  if(notes){
+    const p = document.createElement('p');
+    p.className = 'verse-line';
+    p.style.opacity = '0.8';
+    p.style.fontStyle = 'italic';
+    p.textContent = notes;
+    container.appendChild(p);
+  }
+}
+
+function updateNavButtons(){
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  prevBtn.disabled = currentPoemGlobalIndex === 0;
+  nextBtn.disabled = currentPoemGlobalIndex === poemsData.length - 1;
+}
+
+function navigatePoem(direction){
+  let newIndex = currentPoemGlobalIndex + direction;
+  if(newIndex < 0 || newIndex >= poemsData.length) return;
+
+  // Calculate new indices
+  let chapterIdx = 0, poemIdx = newIndex, accumulated = 0;
+  for(let i = 0; i < chaptersData.length; i++){
+    if(newIndex < accumulated + chaptersData[i].poems.length){
+      chapterIdx = i;
+      poemIdx = newIndex - accumulated;
+      break;
+    }
+    accumulated += chaptersData[i].poems.length;
+  }
+
+  // Update content
+  currentChapterIndex = chapterIdx;
+  currentPoemIndex = poemIdx;
+  currentPoemGlobalIndex = newIndex;
+  const poem = chaptersData[chapterIdx].poems[poemIdx];
+  const chapterName = chaptersData[chapterIdx].name;
+  document.getElementById('detailTitle').textContent = `${chapterName} · ${poem.title}`;
+  renderPoemContent(chapterIdx, poemIdx);
+  updateNavButtons();
+}
+
+// ========== 搜索功能 ==========
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+/* ============================================================
+   固化代码：搜索功能
+   功能：支持书名号《》和空格模糊搜索
+   规则：
+     - 去除书名号后匹配标题
+     - 使用 content/verses 匹配正文
+     - 返回 chapterIdx + poemIdx（非全局索引）
+   注意：修改搜索逻辑时请勿改动此函数
+   ============================================================ */
+searchInput.addEventListener('input',()=>{
+  const query = searchInput.value.trim();
+  if(!query){
+    searchResults.classList.remove('show');
+    return;
+  }
+
+  const results = [];
+  // 清理搜索词：去除书名号《》和空格
+  const cleanQuery = query.replace(/[《》\s]/g, '');
+  
+  poemsData.forEach((poem, index) => {
+    let found = false;
+    let matchText = '';
+    
+    // 标题搜索（去除书名号后匹配）
+    const cleanTitle = poem.title.replace(/[《》]/g, '');
+    if (cleanTitle.includes(cleanQuery) || poem.title.includes(query)) {
+      found = true;
+      matchText = poem.title;
+    }
+    
+    // 正文搜索（使用 content 或 verses）
+    const verses = poem.content || poem.verses || [];
+    verses.forEach(verse => {
+      if (verse.includes(query)) {
+        found = true;
+        matchText = verse.substring(0, 50) + '...';
+      }
+    });
+    
+    if (found) {
+      // 计算该诗在 chaptersData 中的 chapterIdx 和 poemIdx
+      let chapterIdx = 0, poemIdx = 0;
+      for (let i = 0; i < chaptersData.length; i++) {
+        const idx = chaptersData[i].poems.findIndex(p => p.title === poem.title);
+        if (idx !== -1) {
+          chapterIdx = i;
+          poemIdx = idx;
+          break;
+        }
+      }
+      results.push({poem, chapterIdx, poemIdx, matchText});
+    }
+  });
+  
+  if(results.length === 0){
+    searchResults.innerHTML = '<div style="padding:20px;text-align:center;opacity:0.6">未找到相关诗篇</div>';
+  }else{
+    searchResults.innerHTML = results.slice(0,20).map(r=>`
+      <div class="search-result-item" onclick="showSearchResult(${r.chapterIdx}, ${r.poemIdx})">
+        <div class="search-result-title">${r.poem.title}</div>
+        <div class="search-result-preview">${r.matchText}</div>
+      </div>
+    `).join('');
+  }
+  searchResults.classList.add('show');
+});
+
+function showSearchResult(chapterIdx, poemIdx){
+  searchResults.classList.remove('show');
+  searchInput.value = '';
+  showPoemDetail(chapterIdx, poemIdx);
+}
+
+/* ============================================================
+   固化代码：键盘导航
+   功能：← → 翻页，ESC 返回上一级
+   注意：请勿改动
+   ============================================================ */
+addEventListener('keydown',e=>{
+  if(e.key === 'Escape'){
+    if(currentView === 'detail') showView('chapter');
+    else if(currentView === 'chapter') showView('home');
+    return;
+  }
+  if(e.key === 'ArrowLeft') navigatePoem(-1);
+  if(e.key === 'ArrowRight') navigatePoem(1);
+});
+
+/* ============================================================
+   左侧目录导航
+   ============================================================ */
+const tocPanel = document.getElementById('toc-panel');
+const tocOverlay = document.getElementById('toc-overlay');
+const tocContent = document.getElementById('tocContent');
+let tocOpen = false;
+
+function toggleTOC(){
+  tocOpen = !tocOpen;
+  tocPanel.classList.toggle('open', tocOpen);
+  tocOverlay.classList.toggle('show', tocOpen);
+}
+
+function renderTOC(){
+  tocContent.innerHTML = '';
+  chaptersData.forEach((chapter, idx) => {
+    const chapterDiv = document.createElement('div');
+    chapterDiv.className = 'toc-chapter';
+    chapterDiv.innerHTML = `
+      <div class="toc-chapter-header" data-chapter="${idx}" onclick="toggleChapter(${idx})">
+        <span class="toc-chapter-name">${chapter.name}</span>
+        <span class="toc-chapter-count">${chapter.poems.length}首</span>
+      </div>
+      <div class="toc-poems" id="toc-poems-${idx}"></div>
+    `;
+    tocContent.appendChild(chapterDiv);
+    
+    // 填充诗歌列表
+    const poemsContainer = document.getElementById(`toc-poems-${idx}`);
+    chapter.poems.forEach((poem, pIdx) => {
+      const poemDiv = document.createElement('div');
+      poemDiv.className = 'toc-poem';
+      poemDiv.setAttribute('data-poem', `${idx}-${pIdx}`);
+      poemDiv.innerHTML = `
+        <span class="toc-poem-title">${poem.title}</span>
+        <span class="toc-poem-date">${poem.date || ''}</span>
+      `;
+      poemDiv.onclick = () => {
+        showPoemDetail(idx, pIdx);
+        toggleTOC(); // 关闭目录
+      };
+      poemsContainer.appendChild(poemDiv);
+    });
+  });
+}
+
+function toggleChapter(idx){
+  const poemsDiv = document.getElementById(`toc-poems-${idx}`);
+  poemsDiv.classList.toggle('show');
+  // 高亮当前章节
+  document.querySelectorAll('.toc-chapter-header').forEach(el => el.classList.remove('active'));
+  if(poemsDiv.classList.contains('show')){
+    document.querySelector(`[data-chapter="${idx}"]`).classList.add('active');
+  }
+}
+
+function filterTOC(){
+  const query = document.getElementById('tocSearchInput').value.trim().toLowerCase();
+  if(!query){
+    document.querySelectorAll('.toc-chapter').forEach(ch => ch.style.display = '');
+    document.querySelectorAll('.toc-poem').forEach(p => p.style.display = '');
+    return;
+  }
+  
+  document.querySelectorAll('.toc-chapter').forEach(chapter => {
+    let hasMatch = false;
+    const poems = chapter.querySelectorAll('.toc-poem');
+    poems.forEach(poem => {
+      const title = poem.querySelector('.toc-poem-title').textContent.toLowerCase();
+      if(title.includes(query)){
+        poem.style.display = '';
+        hasMatch = true;
+      } else {
+        poem.style.display = 'none';
+      }
+    });
+    chapter.style.display = hasMatch ? '' : 'none';
+    if(hasMatch){
+      chapter.querySelector('.toc-poems').classList.add('show');
+    }
+  });
+}
+
+// 键盘快捷键：按 T 键切换目录
+addEventListener('keydown', e => {
+  if(e.key === 't' || e.key === 'T'){
+    if(document.activeElement.tagName !== 'INPUT'){
+      toggleTOC();
+    }
+  }
+});
+
+// ========== 触摸滑动翻页 ==========
+let touchStartX = 0;
+const detailEl = document.getElementById('detail-view');
+detailEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+detailEl.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if(Math.abs(dx) > 60){
+    navigatePoem(dx < 0 ? 1 : -1);
+  }
+}, {passive:true});
+
+// ========== 初始化 ==========
+renderChapters();
+renderTOC();
+
+// 音乐播放
+function toggleMusic(){
+  var audio = document.getElementById('bgAudio');
+  var btn = document.getElementById('musicBtn');
+  var icon = document.getElementById('musicIcon');
+  if(audio.paused){
+    audio.play().then(function(){
+      btn.innerHTML = '&#10074;&#10074; 暂停';
+      icon.classList.add('playing');
+    }).catch(function(e){
+      console.log('播放失败:', e);
+    });
+  } else {
+    audio.pause();
+    btn.innerHTML = '&#9654; 播放';
+    icon.classList.remove('playing');
+  }
+}
+
+</script>
+
+<!-- 音乐播放器 -->
+<div class="music-player" id="musicPlayer">
+  <div class="music-info">
+    <span class="music-icon" id="musicIcon">&#9836;</span>
+    <span class="music-title">可可托海的牧羊人</span>
+  </div>
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">&#9654; 播放</button>
+</div>
+
+<audio id="bgAudio" loop preload="none">
+  <source src="../可可托海的牧羊人.mp3" type="audio/mpeg">
+</audio>
+
+</body>
+</html>
