@@ -30204,7 +30204,7 @@ var poetIndex = [
 
 var statsData = {
   "total_poems": 686,
-  "pure_poems": 684,
+  "pure_poems": 608,
   "upper_count": 466,
   "lower_count": 218,
   "total_allusions": 126,
