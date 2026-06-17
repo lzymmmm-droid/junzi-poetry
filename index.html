@@ -271,11 +271,25 @@
     <span class="music-icon">&#9836;</span>
     <span class="music-title">可可托海的牧羊人</span>
   </div>
-  <audio id="bgAudio" loop preload="none">
-    <source src="bgm.mp3" type="audio/mpeg">
-  </audio>
+  <audio id="bgAudio" loop preload="none"></audio>
   <button class="music-btn" id="musicBtn" onclick="toggleMusic()">&#9654; 播放</button>
 </div>
+<script>
+// 加载 BGM：优先使用 GitHub Release 链接，失败时回退到本地文件
+(function(){
+  var audio = document.getElementById('bgAudio');
+  var releaseUrl = 'https://github.com/lzymmmm-droid/junzi-poetry/releases/download/v1.0/bgm.mp3';
+  var localUrl = 'bgm.mp3';
+  // 先尝试 Release 链接
+  fetch(releaseUrl, {method:'HEAD', mode:'no-cors'}).then(function(){
+    audio.src = releaseUrl;
+    audio.load();
+  }).catch(function(){
+    // Release 链接不可达，尝试本地文件
+    audio.src = localUrl;
+    audio.load();
+  });
+})();
 
 <footer>君子的诗 · 全集 · 2018-2025</footer>
 
