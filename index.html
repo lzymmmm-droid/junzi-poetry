@@ -388,7 +388,9 @@ function renderBookStats(){
 // 概览预览
 function renderOverviewPreview(){
   // 高频典故 Top 8
-  var topAllusions = allusionIndex.slice(0, 8);
+  var topAllusions = allusionIndex.slice().sort(function(a, b){
+    return (b.references ? b.references.length : 0) - (a.references ? a.references.length : 0);
+  }).slice(0, 8);
   document.getElementById('allusionBadge').textContent = '共 ' + allusionIndex.length + ' 个';
   document.getElementById('topAllusions').innerHTML = topAllusions.map(function(a){
     return '<div class="allusion-card" onclick="showAllusionDetail(\'' + escHtml(a.name) + '\')">' +
@@ -418,7 +420,10 @@ function renderOverviewPreview(){
 // 典故索引
 function renderAllusions(){
   document.getElementById('allusionCount').textContent = '共 ' + allusionIndex.length + ' 个';
-  document.getElementById('allusionGrid').innerHTML = allusionIndex.map(function(a){
+  var sorted = allusionIndex.slice().sort(function(a, b){
+    return (b.references ? b.references.length : 0) - (a.references ? a.references.length : 0);
+  });
+  document.getElementById('allusionGrid').innerHTML = sorted.map(function(a){
     return '<div class="allusion-card" onclick="showAllusionDetail(\'' + escHtml(a.name) + '\')">' +
       '<div class="al-name">' + escHtml(a.name) + '</div>' +
       '<span class="al-type">' + escHtml(a.type) + '</span>' +
