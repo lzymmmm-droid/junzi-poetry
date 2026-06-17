@@ -143,8 +143,7 @@
   .music-player .music-title{font-size:13px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .music-player .music-btn{background:rgba(245,237,214,0.15);border:none;color:var(--paper);padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:all 0.3s;font-family:var(--sans-zh)}
   .music-player .music-btn:active{background:rgba(245,237,214,0.4);transform:scale(0.96)}
-  .music-player .volume-wrap{display:flex;align-items:center;gap:6px;font-size:12px}
-  .music-player .volume-wrap input[type=range]{width:60px;accent-color:#f5edd6}
+  .music-player .music-title{font-size:13px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* 页脚 */
   footer{text-align:center;padding:40px 0;color:var(--ink-light);font-size:13px;border-top:1px solid rgba(139,94,60,0.1);margin-top:40px}
@@ -267,147 +266,40 @@
   </div>
 </div>
 
-<!-- 音乐播放器：Web Audio 实时合成中国风旋律，无需加载 MP3 -->
+<!-- 音乐播放器 -->
 <div class="music-player" id="musicPlayer">
   <div class="music-info">
     <span class="music-icon" id="musicIcon">&#9836;</span>
-    <span class="music-title">可可托海的牧羊人 · 合成版</span>
-  </div>
-  <div class="volume-wrap" id="volumeWrap" style="display:none">
-    <span>🔈</span>
-    <input type="range" id="volumeSlider" min="0" max="100" value="60" oninput="setVolume(this.value)">
+    <span class="music-title">可可托海的牧羊人</span>
   </div>
   <button class="music-btn" id="musicBtn" onclick="toggleMusic()">&#9654; 播放</button>
 </div>
+
+<audio id="bgAudio" loop preload="none">
+  <source src="可可托海的牧羊人.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-// 中国风五声音阶背景音乐 —— Web Audio 实时合成
-// 0 网络依赖，移动端秒开
-var bgm = {
-  ctx: null,
-  playing: false,
-  gain: null,
-  timer: null,
-  volume: 0.6,
-  // 旋律：参考可可托海的牧羊人主歌，五声音阶
-  melody: [
-    // [频率Hz, 时值(拍)]
-    [392, 2], [440, 1], [494, 1], [523, 2], [587, 2],
-    [523, 1], [494, 1], [440, 4],
-    [392, 2], [440, 1], [494, 1], [523, 2], [587, 2],
-    [659, 2], [587, 1], [523, 3], [440, 2],
-    [392, 2], [440, 1], [494, 1], [523, 4],
-    [440, 2], [494, 2], [523, 4],
-    [392, 4], [330, 4]
-  ],
-  tempo: 130, // BPM
-  init: function(){
-    if(this.ctx) return;
-    try {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new Ctx();
-      this.gain = this.ctx.createGain();
-      this.gain.gain.value = this.volume;
-      this.gain.connect(this.ctx.destination);
-    } catch(e){ console.error('Web Audio 不支持', e); }
-  },
-  play: function(){
-    this.init();
-    if(!this.ctx) return false;
-    if(this.ctx.state === 'suspended') this.ctx.resume();
-    this.playing = true;
-    this.schedule();
-    return true;
-  },
-  pause: function(){
-    this.playing = false;
-    if(this.timer){ clearTimeout(this.timer); this.timer = null; }
-    if(this.ctx && this.gain){
-      this.gain.gain.cancelScheduledValues(this.ctx.currentTime);
-      this.gain.gain.setValueAtTime(this.gain.gain.value, this.ctx.currentTime);
-      this.gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
-      var self = this;
-      setTimeout(function(){
-        if(!self.playing && self.ctx){ self.ctx.suspend && self.ctx.suspend(); }
-      }, 350);
-    }
-  },
-  setVolume: function(v){
-    this.volume = v / 100;
-    if(this.gain && this.ctx){
-      this.gain.gain.cancelScheduledValues(this.ctx.currentTime);
-      this.gain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
-    }
-  },
-  // 排程播放：单音使用合成器（双振荡器 + 简单包络），带柔和的混响感
-  schedule: function(){
-    if(!this.playing) return;
-    var self = this;
-    var beat = 60 / this.tempo; // 一拍秒数
-    var now = this.ctx.currentTime;
-    var t = now + 0.05; // 稍微延迟对齐
-
-    // 先把增益淡入
-    this.gain.gain.cancelScheduledValues(now);
-    this.gain.gain.setValueAtTime(0, now);
-    this.gain.gain.linearRampToValueAtTime(this.volume, now + 0.3);
-
-    for(var i = 0; i < this.melody.length; i++){
-      var freq = this.melody[i][0];
-      var dur = this.melody[i][1] * beat;
-      this.playNote(freq, t, dur);
-      t += dur;
-    }
-    // 走完整首后停 0.5s 再循环
-    var totalMs = (t - now) * 1000 + 500;
-    this.timer = setTimeout(function(){ self.schedule(); }, totalMs);
-  },
-  playNote: function(freq, startTime, dur){
-    if(!this.ctx) return;
-    var ctx = this.ctx;
-    // 主振荡器（三角波，比正弦更柔润）
-    var osc1 = ctx.createOscillator();
-    osc1.type = 'triangle';
-    osc1.frequency.value = freq;
-    // 副振荡器（八度+纯五度叠加，模拟空灵）
-    var osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
-    osc2.frequency.value = freq * 2;
-    var mix2 = ctx.createGain();
-    mix2.gain.value = 0.15;
-    // 简单 ADSR 包络
-    var env = ctx.createGain();
-    env.gain.setValueAtTime(0, startTime);
-    env.gain.linearRampToValueAtTime(0.6, startTime + 0.04);
-    env.gain.linearRampToValueAtTime(0.4, startTime + dur * 0.3);
-    env.gain.linearRampToValueAtTime(0, startTime + dur * 0.95);
-    osc1.connect(env);
-    osc2.connect(mix2);
-    mix2.connect(env);
-    env.connect(this.gain);
-    osc1.start(startTime);
-    osc2.start(startTime);
-    osc1.stop(startTime + dur);
-    osc2.stop(startTime + dur);
-  }
-};
-
-function setVolume(v){ bgm.setVolume(v); }
-
+// 音乐播放
 function toggleMusic(){
+  var audio = document.getElementById('bgAudio');
   var btn = document.getElementById('musicBtn');
   var icon = document.getElementById('musicIcon');
-  var volWrap = document.getElementById('volumeWrap');
-  if(!bgm.playing){
-    var ok = bgm.play();
-    if(ok === false){
-      alert('您的浏览器不支持 Web Audio，无法播放背景音乐。');
-      return;
-    }
-    btn.innerHTML = '&#10074;&#10074; 暂停';
-    icon.classList.add('playing');
-    volWrap.style.display = 'flex';
+  if(audio.paused){
+    var origText = btn.innerHTML;
+    btn.innerHTML = '⌛ 加载中...';
+    btn.disabled = true;
+    audio.play().then(function(){
+      btn.innerHTML = '&#10074;&#10074; 暂停';
+      btn.disabled = false;
+      icon.classList.add('playing');
+    }).catch(function(e){
+      btn.innerHTML = origText;
+      btn.disabled = false;
+      alert('无法播放背景音乐。可能原因：\n1. 网络较慢，13MB 音乐文件加载未完成\n2. 浏览器限制了自动播放\n3. 音乐文件缺失\n请稍后重试。');
+    });
   } else {
-    bgm.pause();
+    audio.pause();
     btn.innerHTML = '&#9654; 播放';
     icon.classList.remove('playing');
   }
