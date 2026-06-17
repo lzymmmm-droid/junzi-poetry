@@ -165,7 +165,7 @@
 
   /* 音乐播放器 */
   /* 折叠式音乐播放器 */
-  .music-player{position:fixed;bottom:24px;right:24px;z-index:1000;background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:#f5edd6;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);overflow:hidden;display:flex;align-items:center}
+  .music-player{position:fixed;bottom:24px;left:24px;z-index:1000;background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:#f5edd6;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);overflow:hidden;display:flex;align-items:center}
   .music-player.collapsed{padding:10px 12px;gap:6px;width:auto}
   .music-player.expanded{padding:8px 8px 8px 14px;gap:10px;box-shadow:0 6px 24px rgba(0,0,0,0.5)}
   .music-player .music-info{display:flex;align-items:center;gap:8px;white-space:nowrap}
@@ -763,6 +763,16 @@ function navigatePoem(direction){
   document.getElementById('detailTitle').textContent = `${chapterName} · ${poem.title}`;
   renderPoemContent(chapterIdx, poemIdx);
   updateNavButtons();
+  
+  // 切换诗歌时自动折叠音乐播放器，避免遮挡导航按钮
+  const player = document.getElementById('musicPlayer');
+  const audio = document.getElementById('bgAudio');
+  if(player && player.classList.contains('expanded') && audio && audio.paused){
+    player.classList.remove('expanded');
+    player.classList.add('collapsed');
+    player.querySelector('.music-info').style.display = 'none';
+    document.getElementById('musicBtn').style.display = 'none';
+  }
 }
 
 // ========== 搜索功能 ==========
