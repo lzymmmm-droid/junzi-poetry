@@ -359,7 +359,7 @@ function renderStats(){
     {n: s.pure_poems, l: '纯诗篇', sub: '不含序/附录/后记'},
     {n: s.total_allusions, l: '典故引用', sub: '《红楼梦》最频'},
     {n: s.total_poets, l: '古代诗人', sub: '唐宋为主'},
-    {n: '8', l: '诗卷', sub: '上册4卷 + 下册3卷'}
+    {n: s.total_words + '万', l: '总字数', sub: '含注释 ' + s.total_words_with_notes + '万字'}
   ].map(function(c){
     return '<div class="stat-card"><div class="stat-number">' + c.n + '</div><div class="stat-label">' + c.l + '</div><div class="stat-sub">' + c.sub + '</div></div>';
   }).join('');

@@ -29836,5 +29836,7 @@ var statsData = {
   "upper_count": 467,
   "lower_count": 219,
   "total_allusions": 126,
-  "total_poets": 50
+  "total_poets": 50,
+  "total_words": "10.2",
+  "total_words_with_notes": "14.0"
 };
