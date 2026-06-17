@@ -119,7 +119,7 @@
   .timeline-poem:hover{background:var(--accent);color:var(--paper)}
 
   /* 模态框 */
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(61,46,26,0.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(61,46,26,0.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);touch-action:pan-y}
   .modal-overlay.active{display:flex}
   .modal-box{background:var(--paper);border-radius:20px;max-width:700px;width:90%;max-height:80vh;overflow-y:auto;padding:32px;box-shadow:0 20px 60px rgba(61,46,26,0.3);position:relative}
   .modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(61,46,26,0.15);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink-light);transition:all 0.3s}
@@ -266,6 +266,10 @@
     <button class="modal-close" onclick="closePoemDetail()">&times;</button>
     <div class="modal-title" id="poemModalTitle"></div>
     <div id="poemModalContent"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(139,94,60,0.1)">
+      <button onclick="navPrevPoem()" id="prevBtn" style="background:none;border:1px solid var(--accent);color:var(--accent);padding:6px 20px;border-radius:16px;font-size:13px;cursor:pointer">◀ 上一首</button>
+      <button onclick="navNextPoem()" id="nextBtn" style="background:none;border:1px solid var(--accent);color:var(--accent);padding:6px 20px;border-radius:16px;font-size:13px;cursor:pointer">下一首 ▶</button>
+    </div>
   </div>
 </div>
 
@@ -515,9 +519,13 @@ function closeModal(id){
 // 诗篇详情
 var lastSectionBeforePoem = '';
 
+var currentPoemIndex = -1;
+
 function showPoemDetail(title){
-  var poem = masterData.find(function(p){return p.title === title});
-  if(!poem) return;
+  var idx = masterData.findIndex(function(p){return p.title === title});
+  if(idx === -1) return;
+  currentPoemIndex = idx;
+  var poem = masterData[idx];
   lastSectionBeforePoem = currentSection;
   document.getElementById('poemModalTitle').textContent = poem.title;
   var html = '<div style="margin-bottom:8px;font-size:13px;color:var(--ink-light)">' + (poem.date || '') + ' · ' + (poem.book || '') + '</div>';
@@ -532,8 +540,35 @@ function showPoemDetail(title){
       '<div style="font-weight:600;color:var(--accent);margin-bottom:4px">注释</div>' + escHtml(poem.annotation) + '</div>';
   }
   document.getElementById('poemModalContent').innerHTML = html;
+  document.getElementById('prevBtn').style.visibility = idx > 0 ? 'visible' : 'hidden';
+  document.getElementById('nextBtn').style.visibility = idx < masterData.length - 1 ? 'visible' : 'hidden';
   document.getElementById('poemModal').classList.add('active');
 }
+
+function navPrevPoem(){
+  if(currentPoemIndex > 0) showPoemDetail(masterData[currentPoemIndex - 1].title);
+}
+function navNextPoem(){
+  if(currentPoemIndex < masterData.length - 1) showPoemDetail(masterData[currentPoemIndex + 1].title);
+}
+
+// 手机端左右滑动翻页
+(function(){
+  var touchStartX, touchEndX;
+  var modal = null;
+  // 延迟绑定，等 DOM 就绪
+  document.addEventListener('DOMContentLoaded', function(){
+    modal = document.getElementById('poemModal');
+    if(!modal) return;
+    modal.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
+    modal.addEventListener('touchend', function(e){
+      touchEndX = e.changedTouches[0].clientX;
+      var diff = touchEndX - touchStartX;
+      if(Math.abs(diff) < 50) return;
+      if(diff > 0) navPrevPoem(); else navNextPoem();
+    }, {passive:true});
+  });
+})();
 
 function closePoemDetail(){
   document.getElementById('poemModal').classList.remove('active');
