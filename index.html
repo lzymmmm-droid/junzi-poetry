@@ -613,7 +613,10 @@ function performSearch(){
   document.getElementById('searchCount').textContent = results.length + ' 条';
   document.getElementById('searchResults').innerHTML = results.length > 0 ?
     results.map(function(r){
-      return '<div class="search-result">' +
+      var clickFn = r.type === '诗篇'
+        ? "showPoemDetail('" + escHtml(r.title) + "')"
+        : "showAllusionDetail('" + escHtml(r.title) + "')";
+      return '<div class="search-result" style="cursor:pointer" onclick="' + clickFn + '">' +
         '<div class="sr-title">' + r.snippet + '</div>' +
         '<div class="sr-date">' + r.type + (r.book ? ' · ' + r.book : '') + (r.date ? ' · ' + r.date : '') + '</div>' +
       '</div>';
