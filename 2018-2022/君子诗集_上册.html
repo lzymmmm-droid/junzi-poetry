@@ -164,15 +164,18 @@
   }
 
   /* 音乐播放器 */
-  .music-player{position:fixed;bottom:24px;right:24px;z-index:1000;background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:#f5edd6;border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,0.4);cursor:pointer;transition:all 0.3s}
-  .music-player:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,0.5)}
-  .music-player .music-info{display:flex;align-items:center;gap:8px}
-  .music-player .music-icon{font-size:20px;animation:none}
+  /* 折叠式音乐播放器：默认仅显社迷你图标，点击展开控件，避免遮挡「上一首/下一首」按钮 */
+  .music-player{position:fixed;bottom:24px;right:24px;z-index:1000;background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:#f5edd6;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);overflow:hidden;display:flex;align-items:center}
+  .music-player.collapsed{padding:10px 12px;gap:6px;width:auto}
+  .music-player.expanded{padding:8px 8px 8px 14px;gap:10px;box-shadow:0 6px 24px rgba(0,0,0,0.5)}
+  .music-player .music-info{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .music-player .music-icon{font-size:18px;line-height:1;cursor:pointer;user-select:none;transition:transform 0.2s}
+  .music-player .music-icon:hover{transform:scale(1.1)}
   .music-player .music-icon.playing{animation:spin 3s linear infinite}
-  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
   .music-player .music-title{font-size:13px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .music-player .music-btn{background:rgba(245,237,214,0.15);border:none;color:#f5edd6;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:all 0.3s;font-family:var(--sans-zh)}
+  .music-player .music-btn{background:rgba(245,237,214,0.15);border:none;color:#f5edd6;padding:6px 12px;border-radius:14px;font-size:12px;cursor:pointer;transition:all 0.3s;font-family:var(--sans-zh);white-space:nowrap}
   .music-player .music-btn:hover{background:rgba(245,237,214,0.3)}
+  .music-player .music-btn:active{background:rgba(245,237,214,0.4);transform:scale(0.96)}
 
 </style>
 </head>
@@ -957,35 +960,70 @@ renderChapters();
 renderTOC();
 
 // 音乐播放
+// 音乐播放
 function toggleMusic(){
-  var audio = document.getElementById('bgAudio');
-  var btn = document.getElementById('musicBtn');
-  var icon = document.getElementById('musicIcon');
+  var player = document.getElementById("musicPlayer");
+  var audio = document.getElementById("bgAudio");
+  var btn = document.getElementById("musicBtn");
+  var icon = document.getElementById("musicIcon");
+  var info = player.querySelector('.music-info');
+  
+  // 如果是折叠状态，先展开
+  if(player.classList.contains('collapsed')){
+    player.classList.remove('collapsed');
+    player.classList.add('expanded');
+    info.style.display = 'flex';
+    btn.style.display = 'inline-block';
+    return;
+  }
+  
   if(audio.paused){
+    var origText = btn.innerHTML;
+    btn.innerHTML = '\u23f3 \u52a0\u8f7d\u4e2d...';
+    btn.disabled = true;
     audio.play().then(function(){
-      btn.innerHTML = '&#10074;&#10074; 暂停';
+      btn.innerHTML = '&#10074;&#10074; \u6682\u505c';
+      btn.disabled = false;
       icon.classList.add('playing');
     }).catch(function(e){
-      console.log('播放失败:', e);
+      console.log('\u64ad\u653e\u5931\u8d25:', e);
+      btn.innerHTML = origText;
+      btn.disabled = false;
     });
   } else {
     audio.pause();
-    btn.innerHTML = '&#9654; 播放';
+    btn.innerHTML = '&#9654; \u64ad\u653e';
     icon.classList.remove('playing');
   }
 }
 
+// 点击页面其他区域自动折叠
+document.addEventListener('click', function(e){
+  var player = document.getElementById('musicPlayer');
+  if(!player || !player.contains(e.target)){
+    // 如果是展开状态且不在播放，折叠
+    if(player && player.classList.contains('expanded')){
+      var audio = document.getElementById('bgAudio');
+      if(audio && audio.paused){
+        player.classList.remove('expanded');
+        player.classList.add('collapsed');
+        player.querySelector('.music-info').style.display = 'none';
+        document.getElementById('musicBtn').style.display = 'none';
+      }
+    }
+  }
+});
+
 </script>
 
-<!-- 音乐播放器 -->
-<div class="music-player" id="musicPlayer">
-  <div class="music-info">
-    <span class="music-icon" id="musicIcon">&#9836;</span>
+<!-- 折叠式音乐播放器 -->
+<div class="music-player collapsed" id="musicPlayer">
+  <span class="music-icon" id="musicIcon" onclick="toggleMusic()">&#9836;</span>
+  <div class="music-info" style="display:none">
     <span class="music-title">可可托海的牧羊人</span>
   </div>
-  <button class="music-btn" id="musicBtn" onclick="toggleMusic()">&#9654; 播放</button>
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" style="display:none">&#9654; 播澔</button>
 </div>
-
 <audio id="bgAudio" loop preload="none">
   <source src="../可可托海的牧羊人.mp3" type="audio/mpeg">
 </audio>
