@@ -556,16 +556,23 @@ function navNextPoem(){
 (function(){
   var touchStartX, touchEndX;
   var modal = null;
+  var touchStartX = 0, touchStartY = 0;
   // 延迟绑定，等 DOM 就绪
   document.addEventListener('DOMContentLoaded', function(){
     modal = document.getElementById('poemModal');
     if(!modal) return;
-    modal.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
+    modal.addEventListener('touchstart', function(e){
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, {passive:true});
     modal.addEventListener('touchend', function(e){
-      touchEndX = e.changedTouches[0].clientX;
-      var diff = touchEndX - touchStartX;
-      if(Math.abs(diff) < 50) return;
-      if(diff > 0) navPrevPoem(); else navNextPoem();
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      var dy = e.changedTouches[0].clientY - touchStartY;
+      // 垂直位移大于水平位移 → 视为滚动，不翻页
+      if(Math.abs(dy) > Math.abs(dx)) return;
+      // 水平滑动阈值 50px
+      if(Math.abs(dx) < 50) return;
+      if(dx > 0) navPrevPoem(); else navNextPoem();
     }, {passive:true});
   });
 })();
