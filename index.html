@@ -275,7 +275,7 @@
   <div class="music-info" style="display:none">
     <span class="music-title">可可托海的牧羊人</span>
   </div>
-  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" style="display:none">&#9654; 播澔</button>
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" style="display:none">&#9654; 播放</button>
 </div>
 <audio id="bgAudio" loop preload="none">
   <source src="可可托海的牧羊人.mp3" type="audio/mpeg">
@@ -289,18 +289,16 @@ function toggleMusic(){
   var audio = document.getElementById("bgAudio");
   var btn = document.getElementById("musicBtn");
   var icon = document.getElementById("musicIcon");
-  var info = player.querySelector('.music-info');
-  
+  var info = document.querySelector('.music-info');
+
   if(player.classList.contains('collapsed')){
     player.classList.remove('collapsed');
     player.classList.add('expanded');
     info.style.display = 'flex';
     btn.style.display = 'inline-block';
-    return;
   }
-  
+
   if(audio.paused){
-    var origText = btn.innerHTML;
     btn.innerHTML = '\u23f3 \u52a0\u8f7d\u4e2d...';
     btn.disabled = true;
     audio.play().then(function(){
@@ -308,15 +306,13 @@ function toggleMusic(){
       btn.disabled = false;
       icon.classList.add('playing');
     }).catch(function(e){
-      btn.innerHTML = origText;
+      console.log('\u64ad\u653e\u5931\u8d25:', e);
+      btn.innerHTML = '\&#9654; \u64ad\u653e';
       btn.disabled = false;
-      alert('\u65e0\u6cd5\u64ad\u653e\u83cc\u666f\u97f3\u4e50\u3002\u53ef\u80fd\u539f\u56e0\uff1a
-1. \u7f51\u7edc\u8f83\u6162\uff0c13MB \u97f3\u4e50\u6587\u4ef6\u52a0\u8f7d\u672a\u5b8c\u6210
-2. \u6d4f\u89c8\u5668\u9650\u5236\u4e86\u81ea\u52a8\u64ad\u653e');
     });
   } else {
     audio.pause();
-    btn.innerHTML = '&#9654; \u64ad\u653e';
+    btn.innerHTML = '\&#9654; \u64ad\u653e';
     icon.classList.remove('playing');
   }
 }

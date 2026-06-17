@@ -977,54 +977,27 @@ function toggleMusic(){
   var btn = document.getElementById("musicBtn");
   var icon = document.getElementById("musicIcon");
   var info = player.querySelector('.music-info');
-  
-  // 如果是折叠状态，先展开
+
   if(player.classList.contains('collapsed')){
     player.classList.remove('collapsed');
     player.classList.add('expanded');
     info.style.display = 'flex';
     btn.style.display = 'inline-block';
-    return;
   }
-  
+
   if(audio.paused){
-    var origText = btn.innerHTML;
-    btn.innerHTML = '\u23f3 \u52a0\u8f7d\u4e2d...';
-    btn.disabled = true;
     audio.play().then(function(){
       btn.innerHTML = '&#10074;&#10074; \u6682\u505c';
-      btn.disabled = false;
       icon.classList.add('playing');
     }).catch(function(e){
       console.log('\u64ad\u653e\u5931\u8d25:', e);
-      btn.innerHTML = origText;
-      btn.disabled = false;
     });
   } else {
     audio.pause();
-    btn.innerHTML = '&#9654; \u64ad\u653e';
+    btn.innerHTML = '\&#9654; \u64ad\u653e';
     icon.classList.remove('playing');
   }
-}
-
-// 点击页面其他区域自动折叠
-document.addEventListener('click', function(e){
-  var player = document.getElementById('musicPlayer');
-  if(!player || !player.contains(e.target)){
-    // 如果是展开状态且不在播放，折叠
-    if(player && player.classList.contains('expanded')){
-      var audio = document.getElementById('bgAudio');
-      if(audio && audio.paused){
-        player.classList.remove('expanded');
-        player.classList.add('collapsed');
-        player.querySelector('.music-info').style.display = 'none';
-        document.getElementById('musicBtn').style.display = 'none';
-      }
-    }
-  }
-});
-
-</script>
+}/script>
 
 <!-- 折叠式音乐播放器 -->
 <div class="music-player collapsed" id="musicPlayer">
@@ -1032,7 +1005,7 @@ document.addEventListener('click', function(e){
   <div class="music-info" style="display:none">
     <span class="music-title">可可托海的牧羊人</span>
   </div>
-  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" style="display:none">&#9654; 播澔</button>
+  <button class="music-btn" id="musicBtn" onclick="toggleMusic()" style="display:none">&#9654; 播放</button>
 </div>
 <audio id="bgAudio" loop preload="none">
   <source src="../可可托海的牧羊人.mp3" type="audio/mpeg">
