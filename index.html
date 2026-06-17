@@ -1,139 +1,139 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>君子的诗 · 全集</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#3d2e1a;
-    --ink-light:#6b5740;
-    --paper:#f5edd6;
-    --paper-deep:#ede4d0;
-    --accent:#8b5e3c;
-    --accent-light:#c4956a;
-    --serif-en:"Playfair Display",Georgia,serif;
-    --serif-zh:"Noto Serif SC",serif;
-    --sans-zh:"Noto Sans SC",sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:var(--paper);color:var(--ink);font-family:var(--sans-zh);-webkit-font-smoothing:antialiased}
-
-  /* 导航 */
-  nav{background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:var(--paper);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(61,46,26,0.3)}
-  .nav-inner{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-  .nav-brand{display:flex;align-items:baseline;gap:12px}
-  .nav-brand h1{font-family:var(--serif-zh);font-size:28px;font-weight:900;letter-spacing:2px}
-  .nav-brand span{font-size:14px;opacity:0.7}
-  .nav-actions{display:flex;gap:8px;align-items:center}
-  .nav-search{position:relative}
-  .nav-search input{padding:8px 36px 8px 16px;border:1px solid rgba(245,237,214,0.3);border-radius:20px;background:rgba(245,237,214,0.12);color:var(--paper);font-size:14px;width:260px;outline:none;transition:all 0.3s;font-family:var(--sans-zh)}
-  .nav-search input::placeholder{color:rgba(245,237,214,0.5)}
-  .nav-search input:focus{background:rgba(245,237,214,0.2);border-color:rgba(245,237,214,0.5);width:320px}
-  .nav-search button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(245,237,214,0.6);cursor:pointer;font-size:16px}
-  .nav-tabs{display:flex;gap:4px}
-  .nav-tab{padding:8px 16px;border-radius:8px;border:none;background:transparent;color:rgba(245,237,214,0.7);cursor:pointer;font-size:14px;font-family:var(--sans-zh);transition:all 0.3s}
-  .nav-tab:hover{background:rgba(245,237,214,0.15);color:var(--paper)}
-  .nav-tab.active{background:rgba(245,237,214,0.2);color:var(--paper);font-weight:500}
-
-  /* 主容器 */
-  main{max-width:1200px;margin:0 auto;padding:32px 24px}
-
-  /* 统计卡 */
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
-  .stat-card{background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(61,46,26,0.08);transition:all 0.3s;position:relative;overflow:hidden}
-  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:16px 16px 0 0}
-  .stat-card:nth-child(1)::before{background:linear-gradient(90deg,#8b5e3c,#c4956a)}
-  .stat-card:nth-child(2)::before{background:linear-gradient(90deg,#6b8e23,#9acd32)}
-  .stat-card:nth-child(3)::before{background:linear-gradient(90deg,#4682b4,#87ceeb)}
-  .stat-card:nth-child(4)::before{background:linear-gradient(90deg,#cd853f,#f4a460)}
-  .stat-card:nth-child(5)::before{background:linear-gradient(90deg,#9370db,#ba55d3)}
-  .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(61,46,26,0.12)}
-  .stat-number{font-family:var(--serif-en);font-size:36px;font-weight:800;line-height:1}
-  .stat-label{font-size:14px;color:var(--ink-light);margin-top:8px}
-  .stat-sub{font-size:12px;color:var(--accent);margin-top:4px}
-
-  /* 上下册按钮 */
-  .book-entrance{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px}
-  .book-card{position:relative;border-radius:20px;overflow:hidden;cursor:pointer;transition:all 0.4s;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;padding:32px}
-  .book-card::before{content:'';position:absolute;inset:0;z-index:1;transition:all 0.4s}
-  .book-upper{background:linear-gradient(135deg,#5c4a32 0%,#8b6e4e 50%,#c4956a 100%)}
-  .book-upper::before{background:linear-gradient(to top,rgba(61,46,26,0.9) 0%,rgba(61,46,26,0.3) 60%,transparent 100%)}
-  .book-lower{background:linear-gradient(135deg,#6b8e23 0%,#8fbc8f 50%,#c8d8c0 100%)}
-  .book-lower::before{background:linear-gradient(to top,rgba(46,26,61,0.9) 0%,rgba(46,26,61,0.3) 60%,transparent 100%)}
-  .book-card:hover{transform:scale(1.02);box-shadow:0 12px 40px rgba(61,46,26,0.25)}
-  .book-card:hover::before{opacity:0.85}
-  .book-card *{position:relative;z-index:2}
-  .book-card h2{font-family:var(--serif-zh);font-size:32px;font-weight:900;color:var(--paper);margin-bottom:8px}
-  .book-card .book-subtitle{font-size:16px;color:rgba(245,237,214,0.8);margin-bottom:16px}
-  .book-card .book-stats{display:flex;gap:16px;color:rgba(245,237,214,0.7);font-size:14px}
-  .book-card .book-stats span{display:flex;align-items:center;gap:4px}
-  .book-card .book-arrow{position:absolute;right:24px;bottom:24px;font-size:24px;color:rgba(245,237,214,0.6);z-index:2;transition:all 0.3s}
-  .book-card:hover .book-arrow{color:var(--paper);transform:translateX(4px)}
-
-  /* Section */
-  .section{display:none;margin-bottom:40px}
-  .section.active{display:block}
-  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid rgba(139,94,60,0.15)}
-  .section-header h2{font-family:var(--serif-zh);font-size:24px;font-weight:700}
-  .section-header .badge{background:var(--accent);color:var(--paper);padding:4px 12px;border-radius:12px;font-size:13px}
-
-  /* 典故卡片 */
-  .allusion-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
-  .allusion-card{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(61,46,26,0.06);transition:all 0.3s;border-left:4px solid var(--accent)}
-  .allusion-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(61,46,26,0.1)}
-  .allusion-card .al-name{font-family:var(--serif-zh);font-size:18px;font-weight:700;margin-bottom:6px}
-  .allusion-card .al-type{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;background:rgba(139,94,60,0.1);color:var(--accent);margin-bottom:8px}
-  .allusion-card .al-count{font-size:13px;color:var(--ink-light)}
-  .allusion-card .al-poems{margin-top:10px;font-size:13px;color:var(--ink-light)}
-  .allusion-card .al-poem-link{color:var(--accent);cursor:pointer;text-decoration:underline;margin-right:8px}
-
-  /* 诗人卡片 */
-  .poet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-  .poet-card{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(61,46,26,0.06);transition:all 0.3s;cursor:pointer;position:relative;overflow:hidden}
-  .poet-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(61,46,26,0.1)}
-  .poet-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 0 0 60px;opacity:0.08}
-  .poet-card.tang::before{background:#cd853f}
-  .poet-card.song::before{background:#4682b4}
-  .poet-card.other::before{background:#9370db}
-  .poet-card .poet-dynasty{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;margin-bottom:8px}
-  .poet-card.tang .poet-dynasty{background:rgba(205,133,63,0.12);color:#cd853f}
-  .poet-card.song .poet-dynasty{background:rgba(70,130,180,0.12);color:#4682b4}
-  .poet-card.other .poet-dynasty{background:rgba(147,112,219,0.12);color:#9370db}
-  .poet-card .poet-name{font-family:var(--serif-zh);font-size:20px;font-weight:700;margin-bottom:4px}
-  .poet-card .poet-type{font-size:13px;color:var(--ink-light)}
-  .poet-card .poet-count{font-size:13px;color:var(--accent);margin-top:8px}
-
-  /* 诗篇时间线 */
-  .timeline{position:relative;padding-left:32px}
-  .timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:rgba(139,94,60,0.15)}
-  .timeline-year{position:relative;margin-bottom:24px}
-  .timeline-year::before{content:'';position:absolute;left:-24px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--paper)}
-  .timeline-year h3{font-family:var(--serif-en);font-size:22px;font-weight:700;color:var(--accent);margin-bottom:8px}
-  .timeline-poems{display:flex;flex-wrap:wrap;gap:8px}
-  .timeline-poem{background:white;padding:8px 14px;border-radius:8px;font-size:13px;box-shadow:0 1px 4px rgba(61,46,26,0.08);cursor:pointer;transition:all 0.2s}
-  .timeline-poem:hover{background:var(--accent);color:var(--paper)}
-
-  /* 模态框 */
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(61,46,26,0.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-  .modal-overlay.active{display:flex}
-  .modal-box{background:var(--paper);border-radius:20px;max-width:700px;width:90%;max-height:80vh;overflow-y:auto;padding:32px;box-shadow:0 20px 60px rgba(61,46,26,0.3);position:relative}
-  .modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(61,46,26,0.15);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink-light);transition:all 0.3s}
-  .modal-close:hover{background:var(--accent);color:var(--paper);border-color:var(--accent)}
-  .modal-title{font-family:var(--serif-zh);font-size:24px;font-weight:700;margin-bottom:16px;padding-right:40px}
-
-  /* 搜索结果 */
-  .search-result{background:white;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(61,46,26,0.06)}
-  .search-result .sr-title{font-weight:700;font-size:16px;color:var(--accent)}
-  .search-result .sr-date{font-size:13px;color:var(--ink-light);margin-top:2px}
-  .search-result .sr-text{font-size:14px;color:var(--ink-light);margin-top:8px;line-height:1.7}
-  .search-result .sr-highlight{background:rgba(205,133,63,0.2);padding:1px 4px;border-radius:3px}
-
-  /* 音乐播放器 */
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>君子的诗 · 全集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3d2e1a;
+    --ink-light:#6b5740;
+    --paper:#f5edd6;
+    --paper-deep:#ede4d0;
+    --accent:#8b5e3c;
+    --accent-light:#c4956a;
+    --serif-en:"Playfair Display",Georgia,serif;
+    --serif-zh:"Noto Serif SC",serif;
+    --sans-zh:"Noto Sans SC",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans-zh);-webkit-font-smoothing:antialiased}
+
+  /* 导航 */
+  nav{background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:var(--paper);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(61,46,26,0.3)}
+  .nav-inner{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .nav-brand{display:flex;align-items:baseline;gap:12px}
+  .nav-brand h1{font-family:var(--serif-zh);font-size:28px;font-weight:900;letter-spacing:2px}
+  .nav-brand span{font-size:14px;opacity:0.7}
+  .nav-actions{display:flex;gap:8px;align-items:center}
+  .nav-search{position:relative}
+  .nav-search input{padding:8px 36px 8px 16px;border:1px solid rgba(245,237,214,0.3);border-radius:20px;background:rgba(245,237,214,0.12);color:var(--paper);font-size:14px;width:260px;outline:none;transition:all 0.3s;font-family:var(--sans-zh)}
+  .nav-search input::placeholder{color:rgba(245,237,214,0.5)}
+  .nav-search input:focus{background:rgba(245,237,214,0.2);border-color:rgba(245,237,214,0.5);width:320px}
+  .nav-search button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(245,237,214,0.6);cursor:pointer;font-size:16px}
+  .nav-tabs{display:flex;gap:4px}
+  .nav-tab{padding:8px 16px;border-radius:8px;border:none;background:transparent;color:rgba(245,237,214,0.7);cursor:pointer;font-size:14px;font-family:var(--sans-zh);transition:all 0.3s}
+  .nav-tab:hover{background:rgba(245,237,214,0.15);color:var(--paper)}
+  .nav-tab.active{background:rgba(245,237,214,0.2);color:var(--paper);font-weight:500}
+
+  /* 主容器 */
+  main{max-width:1200px;margin:0 auto;padding:32px 24px}
+
+  /* 统计卡 */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+  .stat-card{background:white;border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(61,46,26,0.08);transition:all 0.3s;position:relative;overflow:hidden}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:16px 16px 0 0}
+  .stat-card:nth-child(1)::before{background:linear-gradient(90deg,#8b5e3c,#c4956a)}
+  .stat-card:nth-child(2)::before{background:linear-gradient(90deg,#6b8e23,#9acd32)}
+  .stat-card:nth-child(3)::before{background:linear-gradient(90deg,#4682b4,#87ceeb)}
+  .stat-card:nth-child(4)::before{background:linear-gradient(90deg,#cd853f,#f4a460)}
+  .stat-card:nth-child(5)::before{background:linear-gradient(90deg,#9370db,#ba55d3)}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(61,46,26,0.12)}
+  .stat-number{font-family:var(--serif-en);font-size:36px;font-weight:800;line-height:1}
+  .stat-label{font-size:14px;color:var(--ink-light);margin-top:8px}
+  .stat-sub{font-size:12px;color:var(--accent);margin-top:4px}
+
+  /* 上下册按钮 */
+  .book-entrance{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px}
+  .book-card{position:relative;border-radius:20px;overflow:hidden;cursor:pointer;transition:all 0.4s;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;padding:32px}
+  .book-card::before{content:'';position:absolute;inset:0;z-index:1;transition:all 0.4s}
+  .book-upper{background:linear-gradient(135deg,#5c4a32 0%,#8b6e4e 50%,#c4956a 100%)}
+  .book-upper::before{background:linear-gradient(to top,rgba(61,46,26,0.9) 0%,rgba(61,46,26,0.3) 60%,transparent 100%)}
+  .book-lower{background:linear-gradient(135deg,#6b8e23 0%,#8fbc8f 50%,#c8d8c0 100%)}
+  .book-lower::before{background:linear-gradient(to top,rgba(46,26,61,0.9) 0%,rgba(46,26,61,0.3) 60%,transparent 100%)}
+  .book-card:hover{transform:scale(1.02);box-shadow:0 12px 40px rgba(61,46,26,0.25)}
+  .book-card:hover::before{opacity:0.85}
+  .book-card *{position:relative;z-index:2}
+  .book-card h2{font-family:var(--serif-zh);font-size:32px;font-weight:900;color:var(--paper);margin-bottom:8px}
+  .book-card .book-subtitle{font-size:16px;color:rgba(245,237,214,0.8);margin-bottom:16px}
+  .book-card .book-stats{display:flex;gap:16px;color:rgba(245,237,214,0.7);font-size:14px}
+  .book-card .book-stats span{display:flex;align-items:center;gap:4px}
+  .book-card .book-arrow{position:absolute;right:24px;bottom:24px;font-size:24px;color:rgba(245,237,214,0.6);z-index:2;transition:all 0.3s}
+  .book-card:hover .book-arrow{color:var(--paper);transform:translateX(4px)}
+
+  /* Section */
+  .section{display:none;margin-bottom:40px}
+  .section.active{display:block}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid rgba(139,94,60,0.15)}
+  .section-header h2{font-family:var(--serif-zh);font-size:24px;font-weight:700}
+  .section-header .badge{background:var(--accent);color:var(--paper);padding:4px 12px;border-radius:12px;font-size:13px}
+
+  /* 典故卡片 */
+  .allusion-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .allusion-card{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(61,46,26,0.06);transition:all 0.3s;border-left:4px solid var(--accent)}
+  .allusion-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(61,46,26,0.1)}
+  .allusion-card .al-name{font-family:var(--serif-zh);font-size:18px;font-weight:700;margin-bottom:6px}
+  .allusion-card .al-type{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;background:rgba(139,94,60,0.1);color:var(--accent);margin-bottom:8px}
+  .allusion-card .al-count{font-size:13px;color:var(--ink-light)}
+  .allusion-card .al-poems{margin-top:10px;font-size:13px;color:var(--ink-light)}
+  .allusion-card .al-poem-link{color:var(--accent);cursor:pointer;text-decoration:underline;margin-right:8px}
+
+  /* 诗人卡片 */
+  .poet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .poet-card{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(61,46,26,0.06);transition:all 0.3s;cursor:pointer;position:relative;overflow:hidden}
+  .poet-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(61,46,26,0.1)}
+  .poet-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 0 0 60px;opacity:0.08}
+  .poet-card.tang::before{background:#cd853f}
+  .poet-card.song::before{background:#4682b4}
+  .poet-card.other::before{background:#9370db}
+  .poet-card .poet-dynasty{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;margin-bottom:8px}
+  .poet-card.tang .poet-dynasty{background:rgba(205,133,63,0.12);color:#cd853f}
+  .poet-card.song .poet-dynasty{background:rgba(70,130,180,0.12);color:#4682b4}
+  .poet-card.other .poet-dynasty{background:rgba(147,112,219,0.12);color:#9370db}
+  .poet-card .poet-name{font-family:var(--serif-zh);font-size:20px;font-weight:700;margin-bottom:4px}
+  .poet-card .poet-type{font-size:13px;color:var(--ink-light)}
+  .poet-card .poet-count{font-size:13px;color:var(--accent);margin-top:8px}
+
+  /* 诗篇时间线 */
+  .timeline{position:relative;padding-left:32px}
+  .timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:rgba(139,94,60,0.15)}
+  .timeline-year{position:relative;margin-bottom:24px}
+  .timeline-year::before{content:'';position:absolute;left:-24px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--paper)}
+  .timeline-year h3{font-family:var(--serif-en);font-size:22px;font-weight:700;color:var(--accent);margin-bottom:8px}
+  .timeline-poems{display:flex;flex-wrap:wrap;gap:8px}
+  .timeline-poem{background:white;padding:8px 14px;border-radius:8px;font-size:13px;box-shadow:0 1px 4px rgba(61,46,26,0.08);cursor:pointer;transition:all 0.2s}
+  .timeline-poem:hover{background:var(--accent);color:var(--paper)}
+
+  /* 模态框 */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(61,46,26,0.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .modal-overlay.active{display:flex}
+  .modal-box{background:var(--paper);border-radius:20px;max-width:700px;width:90%;max-height:80vh;overflow-y:auto;padding:32px;box-shadow:0 20px 60px rgba(61,46,26,0.3);position:relative}
+  .modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(61,46,26,0.15);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink-light);transition:all 0.3s}
+  .modal-close:hover{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+  .modal-title{font-family:var(--serif-zh);font-size:24px;font-weight:700;margin-bottom:16px;padding-right:40px}
+
+  /* 搜索结果 */
+  .search-result{background:white;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(61,46,26,0.06)}
+  .search-result .sr-title{font-weight:700;font-size:16px;color:var(--accent)}
+  .search-result .sr-date{font-size:13px;color:var(--ink-light);margin-top:2px}
+  .search-result .sr-text{font-size:14px;color:var(--ink-light);margin-top:8px;line-height:1.7}
+  .search-result .sr-highlight{background:rgba(205,133,63,0.2);padding:1px 4px;border-radius:3px}
+
+  /* 音乐播放器 */
   /* 折叠式音乐播放器：默认小图标，点击展开 */
   .music-player{position:fixed;bottom:24px;right:24px;z-index:1000;background:linear-gradient(135deg,#5c4a32 0%,#3d2e1a 100%);color:var(--paper);border-radius:24px;box-shadow:0 4px 16px rgba(61,46,26,0.4);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);overflow:hidden;display:flex;align-items:center}
   .music-player.collapsed{padding:10px 12px;gap:6px;width:auto}
@@ -147,129 +147,129 @@
   .music-player .music-btn{background:rgba(245,237,214,0.15);border:none;color:var(--paper);padding:6px 12px;border-radius:14px;font-size:12px;cursor:pointer;transition:all 0.3s;font-family:var(--sans-zh);white-space:nowrap}
   .music-player .music-btn:hover{background:rgba(245,237,214,0.3)}
   .music-player .music-btn:active{background:rgba(245,237,214,0.4);transform:scale(0.96)}
-
-  /* 页脚 */
-  footer{text-align:center;padding:40px 0;color:var(--ink-light);font-size:13px;border-top:1px solid rgba(139,94,60,0.1);margin-top:40px}
-
-  @media(max-width:768px){
-    .book-entrance{grid-template-columns:1fr}
-    .stats-grid{grid-template-columns:repeat(2,1fr)}
-    .nav-inner{flex-direction:column;align-items:flex-start}
-    .nav-actions{flex-direction:column;width:100%}
-    .nav-search input{width:100%}
-    .nav-search input:focus{width:100%}
-    .allusion-grid,.poet-grid{grid-template-columns:1fr}
-  }
-</style>
-</head>
-<body>
-
-<!-- 导航 -->
-<nav>
-  <div class="nav-inner">
-    <div class="nav-brand">
-      <h1>君子的诗</h1>
-      <span>2018 - 2025</span>
-    </div>
-    <div class="nav-actions">
-      <div class="nav-search">
-        <input type="text" id="searchInput" placeholder="搜索诗篇、典故、诗人...">
-        <button onclick="performSearch()">&#128269;</button>
-      </div>
-      <div class="nav-tabs">
-        <button class="nav-tab active" onclick="showSection('overview')">概览</button>
-        <button class="nav-tab" onclick="showSection('allusions')">典故</button>
-        <button class="nav-tab" onclick="showSection('poets')">诗人</button>
-        <button class="nav-tab" onclick="showSection('timeline')">时间线</button>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<main>
-  <!-- 概览 -->
-  <div id="sec-overview" class="section active">
-    <div class="stats-grid" id="statsGrid"></div>
-    <div class="book-entrance">
-      <div class="book-card book-upper" onclick="window.open('2018-2022/君子诗集_上册.html','_blank')">
-        <h2>上 册</h2>
-        <div class="book-subtitle">二零一八 · 二零二二</div>
-        <div class="book-stats" id="upperStats"></div>
-        <div class="book-arrow">&#8594;</div>
-      </div>
-      <div class="book-card book-lower" onclick="window.open('2023-2025/君子诗集_下册.html','_blank')">
-        <h2>下 册</h2>
-        <div class="book-subtitle">二零二三 · 二零二五</div>
-        <div class="book-stats" id="lowerStats"></div>
-        <div class="book-arrow">&#8594;</div>
-      </div>
-    </div>
-    <!-- 热门典故/诗人预览 -->
-    <div id="overviewPreview" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-      <div>
-        <div class="section-header"><h2>高频典故</h2><span class="badge" id="allusionBadge"></span></div>
-        <div id="topAllusions"></div>
-      </div>
-      <div>
-        <div class="section-header"><h2>常引诗人</h2><span class="badge" id="poetBadge"></span></div>
-        <div id="topPoets"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 典故 -->
-  <div id="sec-allusions" class="section">
-    <div class="section-header"><h2>典故索引</h2><span class="badge" id="allusionCount"></span></div>
-    <div class="allusion-grid" id="allusionGrid"></div>
-  </div>
-
-  <!-- 诗人 -->
-  <div id="sec-poets" class="section">
-    <div class="section-header"><h2>古代诗人索引</h2><span class="badge" id="poetCount"></span></div>
-    <div class="poet-grid" id="poetGrid"></div>
-  </div>
-
-  <!-- 时间线 -->
-  <div id="sec-timeline" class="section">
-    <div class="section-header"><h2>诗篇时间线</h2></div>
-    <div class="timeline" id="timelineContainer"></div>
-  </div>
-
-  <!-- 搜索结果 -->
-  <div id="sec-search" class="section">
-    <div class="section-header"><h2>搜索结果</h2><span class="badge" id="searchCount"></span></div>
-    <div id="searchResults"></div>
-  </div>
-</main>
-
-<!-- 诗人详情模态 -->
-<div class="modal-overlay" id="poetModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('poetModal')">&times;</button>
-    <div class="modal-title" id="poetModalTitle"></div>
-    <div id="poetModalContent"></div>
-  </div>
-</div>
-
-<!-- 典故详情模态 -->
-<div class="modal-overlay" id="allusionModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('allusionModal')">&times;</button>
-    <div class="modal-title" id="allusionModalTitle"></div>
-    <div id="allusionModalContent"></div>
-  </div>
-</div>
-
-<!-- 诗篇详情模态 -->
-<div class="modal-overlay" id="poemModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closePoemDetail()">&times;</button>
-    <div class="modal-title" id="poemModalTitle"></div>
-    <div id="poemModalContent"></div>
-  </div>
-</div>
-
-<!-- 音乐播放器 -->
+
+  /* 页脚 */
+  footer{text-align:center;padding:40px 0;color:var(--ink-light);font-size:13px;border-top:1px solid rgba(139,94,60,0.1);margin-top:40px}
+
+  @media(max-width:768px){
+    .book-entrance{grid-template-columns:1fr}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .nav-inner{flex-direction:column;align-items:flex-start}
+    .nav-actions{flex-direction:column;width:100%}
+    .nav-search input{width:100%}
+    .nav-search input:focus{width:100%}
+    .allusion-grid,.poet-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <h1>君子的诗</h1>
+      <span>2018 - 2025</span>
+    </div>
+    <div class="nav-actions">
+      <div class="nav-search">
+        <input type="text" id="searchInput" placeholder="搜索诗篇、典故、诗人...">
+        <button onclick="performSearch()">&#128269;</button>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('overview')">概览</button>
+        <button class="nav-tab" onclick="showSection('allusions')">典故</button>
+        <button class="nav-tab" onclick="showSection('poets')">诗人</button>
+        <button class="nav-tab" onclick="showSection('timeline')">时间线</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <!-- 概览 -->
+  <div id="sec-overview" class="section active">
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="book-entrance">
+      <div class="book-card book-upper" onclick="window.open('2018-2022/君子诗集_上册.html','_blank')">
+        <h2>上 册</h2>
+        <div class="book-subtitle">二零一八 · 二零二二</div>
+        <div class="book-stats" id="upperStats"></div>
+        <div class="book-arrow">&#8594;</div>
+      </div>
+      <div class="book-card book-lower" onclick="window.open('2023-2025/君子诗集_下册.html','_blank')">
+        <h2>下 册</h2>
+        <div class="book-subtitle">二零二三 · 二零二五</div>
+        <div class="book-stats" id="lowerStats"></div>
+        <div class="book-arrow">&#8594;</div>
+      </div>
+    </div>
+    <!-- 热门典故/诗人预览 -->
+    <div id="overviewPreview" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div class="section-header"><h2>高频典故</h2><span class="badge" id="allusionBadge"></span></div>
+        <div id="topAllusions"></div>
+      </div>
+      <div>
+        <div class="section-header"><h2>常引诗人</h2><span class="badge" id="poetBadge"></span></div>
+        <div id="topPoets"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 典故 -->
+  <div id="sec-allusions" class="section">
+    <div class="section-header"><h2>典故索引</h2><span class="badge" id="allusionCount"></span></div>
+    <div class="allusion-grid" id="allusionGrid"></div>
+  </div>
+
+  <!-- 诗人 -->
+  <div id="sec-poets" class="section">
+    <div class="section-header"><h2>古代诗人索引</h2><span class="badge" id="poetCount"></span></div>
+    <div class="poet-grid" id="poetGrid"></div>
+  </div>
+
+  <!-- 时间线 -->
+  <div id="sec-timeline" class="section">
+    <div class="section-header"><h2>诗篇时间线</h2></div>
+    <div class="timeline" id="timelineContainer"></div>
+  </div>
+
+  <!-- 搜索结果 -->
+  <div id="sec-search" class="section">
+    <div class="section-header"><h2>搜索结果</h2><span class="badge" id="searchCount"></span></div>
+    <div id="searchResults"></div>
+  </div>
+</main>
+
+<!-- 诗人详情模态 -->
+<div class="modal-overlay" id="poetModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('poetModal')">&times;</button>
+    <div class="modal-title" id="poetModalTitle"></div>
+    <div id="poetModalContent"></div>
+  </div>
+</div>
+
+<!-- 典故详情模态 -->
+<div class="modal-overlay" id="allusionModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('allusionModal')">&times;</button>
+    <div class="modal-title" id="allusionModalTitle"></div>
+    <div id="allusionModalContent"></div>
+  </div>
+</div>
+
+<!-- 诗篇详情模态 -->
+<div class="modal-overlay" id="poemModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePoemDetail()">&times;</button>
+    <div class="modal-title" id="poemModalTitle"></div>
+    <div id="poemModalContent"></div>
+  </div>
+</div>
+
+<!-- 音乐播放器 -->
 <div class="music-player collapsed" id="musicPlayer">
   <span class="music-icon" id="musicIcon" onclick="toggleMusic()">&#9836;</span>
   <div class="music-info" style="display:none">
@@ -280,9 +280,9 @@
 <audio id="bgAudio" loop preload="none">
   <source src="可可托海的牧羊人.mp3" type="audio/mpeg">
 </audio>
-
-<script>
-// 音乐播放
+
+<script>
+// 音乐播放
 // 音乐播放
 function toggleMusic(){
   var player = document.getElementById("musicPlayer");
@@ -335,323 +335,323 @@ document.addEventListener('click', function(e){
     }
   }
 });
-</script>
-
-<footer>君子的诗 · 全集 · 2018-2025</footer>
-
-<script src="data.js"></script>
-<script>
-// 全局变量
-var currentSection = 'overview';
-
-// 初始化
-document.addEventListener('DOMContentLoaded', function(){
-  renderStats();
-  renderBookStats();
-  renderOverviewPreview();
-  renderAllusions();
-  renderPoets();
-  renderTimeline();
-});
-
-// 统计概览
-function renderStats(){
-  var grid = document.getElementById('statsGrid');
-  var s = statsData;
-  grid.innerHTML = [
-    {n: s.total_poems, l: '总篇章', sub: '上册' + s.upper_poems + ' + 下册' + s.lower_poems},
-    {n: s.poem_only, l: '纯诗篇', sub: '不含序/附录/后记'},
-    {n: s.total_allusions, l: '典故引用', sub: '《红楼梦》最频'},
-    {n: s.total_poets, l: '古代诗人', sub: '唐宋为主'},
-    {n: '8', l: '诗卷', sub: '上册4卷 + 下册3卷'}
-  ].map(function(c){
-    return '<div class="stat-card"><div class="stat-number">' + c.n + '</div><div class="stat-label">' + c.l + '</div><div class="stat-sub">' + c.sub + '</div></div>';
-  }).join('');
-}
-
-// 上下册统计
-function renderBookStats(){
-  var upperVols = {};
-  var lowerVols = {};
-  masterData.forEach(function(p){
-    if(p.book === '上册'){
-      upperVols[p.volume] = (upperVols[p.volume] || 0) + 1;
-    } else {
-      lowerVols[p.volume] = (lowerVols[p.volume] || 0) + 1;
-    }
-  });
-  var upperCount = Object.values(upperVols).reduce(function(a,b){return a+b},0);
-  var lowerCount = Object.values(lowerVols).reduce(function(a,b){return a+b},0);
-
-  document.getElementById('upperStats').innerHTML =
-    '<span>' + upperCount + ' 首</span><span>' + Object.keys(upperVols).length + ' 卷</span>';
-  document.getElementById('lowerStats').innerHTML =
-    '<span>' + lowerCount + ' 首</span><span>' + Object.keys(lowerVols).length + ' 卷</span>';
-}
-
-// 概览预览
-function renderOverviewPreview(){
-  // 高频典故 Top 8
-  var topAllusions = allusionIndex.slice(0, 8);
-  document.getElementById('allusionBadge').textContent = '共 ' + allusionIndex.length + ' 个';
-  document.getElementById('topAllusions').innerHTML = topAllusions.map(function(a){
-    return '<div class="allusion-card" onclick="showAllusionDetail(\'' + escHtml(a.name) + '\')">' +
-      '<div class="al-name">' + escHtml(a.name) + '</div>' +
-      '<span class="al-type">' + escHtml(a.type) + '</span>' +
-      '<span class="al-count" style="margin-left:8px">引用 ' + a.references.length + ' 次</span>' +
-      '<div class="al-poems">' + a.references.slice(0,3).map(function(r){
-        return '<span class="al-poem-link">' + escHtml(r.poem_title) + '</span>';
-      }).join('') + (a.references.length > 3 ? '...' : '') + '</div>' +
-    '</div>';
-  }).join('');
-
-  // 高频诗人 Top 8
-  var topPoets = poetIndex.slice(0, 8);
-  document.getElementById('poetBadge').textContent = '共 ' + poetIndex.length + ' 位';
-  document.getElementById('topPoets').innerHTML = topPoets.map(function(p){
-    var cls = (p.dynasty === '唐' || p.dynasty === '唐/五代') ? 'tang' : (p.dynasty === '宋' ? 'song' : 'other');
-    return '<div class="poet-card ' + cls + '" onclick="showPoetDetail(\'' + escHtml(p.name) + '\')">' +
-      '<span class="poet-dynasty">' + escHtml(p.dynasty) + '</span>' +
-      '<div class="poet-name">' + escHtml(p.name) + '</div>' +
-      '<div class="poet-type">' + escHtml(p.type) + '</div>' +
-      '<div class="poet-count">被引用 ' + p.count + ' 次</div>' +
-    '</div>';
-  }).join('');
-}
-
-// 典故索引
-function renderAllusions(){
-  document.getElementById('allusionCount').textContent = '共 ' + allusionIndex.length + ' 个';
-  document.getElementById('allusionGrid').innerHTML = allusionIndex.map(function(a){
-    return '<div class="allusion-card" onclick="showAllusionDetail(\'' + escHtml(a.name) + '\')">' +
-      '<div class="al-name">' + escHtml(a.name) + '</div>' +
-      '<span class="al-type">' + escHtml(a.type) + '</span>' +
-      '<span class="al-count" style="margin-left:8px">引用 ' + a.references.length + ' 次</span>' +
-      '<div class="al-poems">' + a.references.slice(0,4).map(function(r){
-        return '<span class="al-poem-link">' + escHtml(r.poem_title) + '</span>';
-      }).join('') + (a.references.length > 4 ? '...' : '') + '</div>' +
-    '</div>';
-  }).join('');
-}
-
-// 诗人索引
-function renderPoets(){
-  document.getElementById('poetCount').textContent = '共 ' + poetIndex.length + ' 位';
-  document.getElementById('poetGrid').innerHTML = poetIndex.map(function(p){
-    var cls = (p.dynasty === '唐' || p.dynasty === '唐/五代') ? 'tang' : (p.dynasty === '宋' ? 'song' : 'other');
-    return '<div class="poet-card ' + cls + '" onclick="showPoetDetail(\'' + escHtml(p.name) + '\')">' +
-      '<span class="poet-dynasty">' + escHtml(p.dynasty) + '</span>' +
-      '<div class="poet-name">' + escHtml(p.name) + '</div>' +
-      '<div class="poet-type">' + escHtml(p.type) + '</div>' +
-      '<div class="poet-count">被引用 ' + p.count + ' 次</div>' +
-    '</div>';
-  }).join('');
-}
-
-// 时间线
-function renderTimeline(){
-  var years = {};
-  masterData.forEach(function(p){
-    if(!p.date) return;
-    var year = p.date.substring(0, 4);
-    if(!years[year]) years[year] = [];
-    years[year].push(p);
-  });
-  var sorted = Object.keys(years).sort();
-  var html = '';
-  sorted.forEach(function(y){
-    html += '<div class="timeline-year"><h3>' + y + '</h3><div class="timeline-poems">';
-    years[y].forEach(function(p){
-      html += '<div class="timeline-poem" onclick="showPoemDetail(\'' + escHtml(p.title) + '\')" title="' + escHtml(p.title) + ' (' + p.date + ')">' + escHtml(p.title) + '</div>';
-    });
-    html += '</div></div>';
-  });
-  document.getElementById('timelineContainer').innerHTML = html;
-}
-
-// 诗人详情
-function showPoetDetail(name){
-  var poet = poetIndex.find(function(p){return p.name === name});
-  if(!poet) return;
-  document.getElementById('poetModalTitle').textContent = poet.name + '（' + poet.dynasty + '·' + poet.type + '）';
-  var html = '<div style="margin-bottom:16px;font-size:15px;color:var(--ink-light)">被引用 ' + poet.count + ' 次</div>';
-  html += '<div style="font-size:14px">';
-  poet.references.forEach(function(r){
-    html += '<div style="padding:10px 0;border-bottom:1px solid rgba(139,94,60,0.08)">' +
-      '<div style="font-weight:600;color:var(--accent)">' + escHtml(r.poem_title) + ' <span style="font-weight:400;color:var(--ink-light);font-size:13px">' + r.poem_date + '</span></div>' +
-      '<div style="color:var(--ink-light);margin-top:4px;font-size:13px">来源: ' + r.book + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
-  document.getElementById('poetModalContent').innerHTML = html;
-  document.getElementById('poetModal').classList.add('active');
-}
-
-// 典故详情
-function showAllusionDetail(name){
-  var al = allusionIndex.find(function(a){return a.name === name});
-  if(!al) return;
-  document.getElementById('allusionModalTitle').textContent = '《' + al.name + '》';
-  var html = '<div style="margin-bottom:16px"><span class="al-type">' + escHtml(al.type) + '</span> <span style="margin-left:8px;color:var(--ink-light);font-size:14px">引用 ' + al.references.length + ' 次</span></div>';
-  html += '<div style="font-size:14px">';
-  al.references.forEach(function(r){
-    html += '<div style="padding:12px 0;border-bottom:1px solid rgba(139,94,60,0.08)">' +
-      '<div style="font-weight:600;color:var(--accent)">' + escHtml(r.poem_title) + ' <span style="font-weight:400;color:var(--ink-light);font-size:13px">' + r.poem_date + '</span></div>' +
-      '<div style="color:var(--ink-light);margin-top:4px;font-size:13px">来源: ' + r.book + '</div>' +
-      (r.context ? '<div style="color:var(--ink);margin-top:6px;font-size:13px;line-height:1.6;background:rgba(139,94,60,0.05);padding:8px;border-radius:8px">' + escHtml(r.context) + '</div>' : '') +
-    '</div>';
-  });
-  html += '</div>';
-  document.getElementById('allusionModalContent').innerHTML = html;
-  document.getElementById('allusionModal').classList.add('active');
-}
-
-// 关闭模态
-function closeModal(id){
-  document.getElementById(id).classList.remove('active');
-}
-
-// 诗篇详情
-var lastSectionBeforePoem = '';
-
-function showPoemDetail(title){
-  var poem = masterData.find(function(p){return p.title === title});
-  if(!poem) return;
-  lastSectionBeforePoem = currentSection;
-  document.getElementById('poemModalTitle').textContent = poem.title;
-  var html = '<div style="margin-bottom:8px;font-size:13px;color:var(--ink-light)">' + (poem.date || '') + ' · ' + (poem.book || '') + '</div>';
-  html += '<div style="font-family:var(--serif-zh);font-size:16px;line-height:2;margin-bottom:16px">';
-  var lines = poem.content && poem.content.length > 0 ? poem.content : (poem.verses || []);
-  lines.forEach(function(v){
-    html += '<p style="margin:0 0 8px 0">' + escHtml(v) + '</p>';
-  });
-  html += '</div>';
-  if(poem.annotation){
-    html += '<div style="font-size:13px;color:var(--ink-light);line-height:1.8;background:rgba(139,94,60,0.06);padding:12px;border-radius:8px;margin-top:8px">' +
-      '<div style="font-weight:600;color:var(--accent);margin-bottom:4px">注释</div>' + escHtml(poem.annotation) + '</div>';
-  }
-  document.getElementById('poemModalContent').innerHTML = html;
-  document.getElementById('poemModal').classList.add('active');
-}
-
-function closePoemDetail(){
-  document.getElementById('poemModal').classList.remove('active');
-  if(lastSectionBeforePoem) showSection(lastSectionBeforePoem);
-}
-
-// Section切换
-function showSection(name){
-  currentSection = name;
-  var sections = ['overview','allusions','poets','timeline','search'];
-  sections.forEach(function(s){
-    var el = document.getElementById('sec-' + s);
-    if(el) el.classList.toggle('active', s === name);
-  });
-  // 更新tab状态
-  document.querySelectorAll('.nav-tab').forEach(function(tab){
-    tab.classList.toggle('active', tab.textContent.trim() === {
-      overview:'概览', allusions:'典故', poets:'诗人', timeline:'时间线', search:'搜索'
-    }[name]);
-  });
-}
-
-// 搜索
-function performSearch(){
-  var query = document.getElementById('searchInput').value.trim().toLowerCase();
-  if(!query) return;
-
-  var results = [];
-
-  // 搜索诗篇
-  masterData.forEach(function(p){
-    var titleMatch = p.title.toLowerCase().includes(query);
-    var contentMatch = (p.content || []).some(function(c){return c.toLowerCase().includes(query)});
-    var annoMatch = (p.annotation || '').toLowerCase().includes(query);
-    if(titleMatch || contentMatch || annoMatch){
-      var snippet = '';
-      if(titleMatch) snippet = p.title;
-      else if(annoMatch) snippet = (p.annotation || '').substring(0, 120) + '...';
-      else if(p.content && p.content.length > 0) snippet = p.content[0];
-
-      results.push({
-        type: '诗篇',
-        title: p.title,
-        date: p.date || '',
-        book: p.book,
-        snippet: highlightText(snippet, query)
-      });
-    }
-  });
-
-  // 搜索典故
-  allusionIndex.forEach(function(a){
-    if(a.name.toLowerCase().includes(query)){
-      results.push({
-        type: '典故',
-        title: a.name,
-        date: '',
-        book: '',
-        snippet: a.type + '，引用 ' + a.references.length + ' 次'
-      });
-    }
-  });
-
-  // 搜索诗人
-  poetIndex.forEach(function(p){
-    if(p.name.toLowerCase().includes(query)){
-      results.push({
-        type: '诗人',
-        title: p.name + '（' + p.dynasty + '）',
-        date: '',
-        book: '',
-        snippet: p.type + '，被引用 ' + p.count + ' 次'
-      });
-    }
-  });
-
-  document.getElementById('searchCount').textContent = results.length + ' 条';
-  document.getElementById('searchResults').innerHTML = results.length > 0 ?
-    results.map(function(r){
-      return '<div class="search-result">' +
-        '<div class="sr-title">' + r.snippet + '</div>' +
-        '<div class="sr-date">' + r.type + (r.book ? ' · ' + r.book : '') + (r.date ? ' · ' + r.date : '') + '</div>' +
-      '</div>';
-    }).join('') :
-    '<div style="text-align:center;padding:40px;color:var(--ink-light)">未找到相关结果</div>';
-
-  showSection('search');
-}
-
-// 高亮
-function highlightText(text, query){
-  if(!query) return escHtml(text);
-  var re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-  return escHtml(text).replace(re, '<span class="sr-highlight">$1</span>');
-}
-
-// HTML转义
-function escHtml(s){
-  if(!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// 搜索框回车
-document.getElementById('searchInput').addEventListener('keypress', function(e){
-  if(e.key === 'Enter') performSearch();
-});
-
-// 模态框外部点击关闭
-document.querySelectorAll('.modal-overlay').forEach(function(m){
-  m.addEventListener('click', function(e){
-    if(e.target === m) m.classList.remove('active');
-  });
-});
-
-// 检查本地文件是否存在，优先使用本地
-window.addEventListener('load', function(){
-  // 旧 BGM 加载逻辑已废弃，改用 Web Audio 合成（见顶部 bgm 对象）
-  // 保留此 hook 以便未来扩展
-});
-</script>
-</body>
-</html>
+</script>
+
+<footer>君子的诗 · 全集 · 2018-2025</footer>
+
+<script src="data.js"></script>
+<script>
+// 全局变量
+var currentSection = 'overview';
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function(){
+  renderStats();
+  renderBookStats();
+  renderOverviewPreview();
+  renderAllusions();
+  renderPoets();
+  renderTimeline();
+});
+
+// 统计概览
+function renderStats(){
+  var grid = document.getElementById('statsGrid');
+  var s = statsData;
+  grid.innerHTML = [
+    {n: s.total_poems, l: '总篇章', sub: '上册' + s.upper_poems + ' + 下册' + s.lower_poems},
+    {n: s.pure_poems, l: '纯诗篇', sub: '不含序/附录/后记'},
+    {n: s.total_allusions, l: '典故引用', sub: '《红楼梦》最频'},
+    {n: s.total_poets, l: '古代诗人', sub: '唐宋为主'},
+    {n: '8', l: '诗卷', sub: '上册4卷 + 下册3卷'}
+  ].map(function(c){
+    return '<div class="stat-card"><div class="stat-number">' + c.n + '</div><div class="stat-label">' + c.l + '</div><div class="stat-sub">' + c.sub + '</div></div>';
+  }).join('');
+}
+
+// 上下册统计
+function renderBookStats(){
+  var upperVols = {};
+  var lowerVols = {};
+  masterData.forEach(function(p){
+    if(p.book === '上册'){
+      upperVols[p.volume] = (upperVols[p.volume] || 0) + 1;
+    } else {
+      lowerVols[p.volume] = (lowerVols[p.volume] || 0) + 1;
+    }
+  });
+  var upperCount = Object.values(upperVols).reduce(function(a,b){return a+b},0);
+  var lowerCount = Object.values(lowerVols).reduce(function(a,b){return a+b},0);
+
+  document.getElementById('upperStats').innerHTML =
+    '<span>' + upperCount + ' 首</span><span>' + Object.keys(upperVols).length + ' 卷</span>';
+  document.getElementById('lowerStats').innerHTML =
+    '<span>' + lowerCount + ' 首</span><span>' + Object.keys(lowerVols).length + ' 卷</span>';
+}
+
+// 概览预览
+function renderOverviewPreview(){
+  // 高频典故 Top 8
+  var topAllusions = allusionIndex.slice(0, 8);
+  document.getElementById('allusionBadge').textContent = '共 ' + allusionIndex.length + ' 个';
+  document.getElementById('topAllusions').innerHTML = topAllusions.map(function(a){
+    return '<div class="allusion-card" onclick="showAllusionDetail(\'' + escHtml(a.name) + '\')">' +
+      '<div class="al-name">' + escHtml(a.name) + '</div>' +
+      '<span class="al-type">' + escHtml(a.type) + '</span>' +
+      '<span class="al-count" style="margin-left:8px">引用 ' + a.references.length + ' 次</span>' +
+      '<div class="al-poems">' + a.references.slice(0,3).map(function(r){
+        return '<span class="al-poem-link">' + escHtml(r.poem_title) + '</span>';
+      }).join('') + (a.references.length > 3 ? '...' : '') + '</div>' +
+    '</div>';
+  }).join('');
+
+  // 高频诗人 Top 8
+  var topPoets = poetIndex.slice(0, 8);
+  document.getElementById('poetBadge').textContent = '共 ' + poetIndex.length + ' 位';
+  document.getElementById('topPoets').innerHTML = topPoets.map(function(p){
+    var cls = (p.dynasty === '唐' || p.dynasty === '唐/五代') ? 'tang' : (p.dynasty === '宋' ? 'song' : 'other');
+    return '<div class="poet-card ' + cls + '" onclick="showPoetDetail(\'' + escHtml(p.name) + '\')">' +
+      '<span class="poet-dynasty">' + escHtml(p.dynasty) + '</span>' +
+      '<div class="poet-name">' + escHtml(p.name) + '</div>' +
+      '<div class="poet-type">' + escHtml(p.type) + '</div>' +
+      '<div class="poet-count">被引用 ' + p.count + ' 次</div>' +
+    '</div>';
+  }).join('');
+}
+
+// 典故索引
+function renderAllusions(){
+  document.getElementById('allusionCount').textContent = '共 ' + allusionIndex.length + ' 个';
+  document.getElementById('allusionGrid').innerHTML = allusionIndex.map(function(a){
+    return '<div class="allusion-card" onclick="showAllusionDetail(\'' + escHtml(a.name) + '\')">' +
+      '<div class="al-name">' + escHtml(a.name) + '</div>' +
+      '<span class="al-type">' + escHtml(a.type) + '</span>' +
+      '<span class="al-count" style="margin-left:8px">引用 ' + a.references.length + ' 次</span>' +
+      '<div class="al-poems">' + a.references.slice(0,4).map(function(r){
+        return '<span class="al-poem-link">' + escHtml(r.poem_title) + '</span>';
+      }).join('') + (a.references.length > 4 ? '...' : '') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// 诗人索引
+function renderPoets(){
+  document.getElementById('poetCount').textContent = '共 ' + poetIndex.length + ' 位';
+  document.getElementById('poetGrid').innerHTML = poetIndex.map(function(p){
+    var cls = (p.dynasty === '唐' || p.dynasty === '唐/五代') ? 'tang' : (p.dynasty === '宋' ? 'song' : 'other');
+    return '<div class="poet-card ' + cls + '" onclick="showPoetDetail(\'' + escHtml(p.name) + '\')">' +
+      '<span class="poet-dynasty">' + escHtml(p.dynasty) + '</span>' +
+      '<div class="poet-name">' + escHtml(p.name) + '</div>' +
+      '<div class="poet-type">' + escHtml(p.type) + '</div>' +
+      '<div class="poet-count">被引用 ' + p.count + ' 次</div>' +
+    '</div>';
+  }).join('');
+}
+
+// 时间线
+function renderTimeline(){
+  var years = {};
+  masterData.forEach(function(p){
+    if(!p.date) return;
+    var year = p.date.substring(0, 4);
+    if(!years[year]) years[year] = [];
+    years[year].push(p);
+  });
+  var sorted = Object.keys(years).sort();
+  var html = '';
+  sorted.forEach(function(y){
+    html += '<div class="timeline-year"><h3>' + y + '</h3><div class="timeline-poems">';
+    years[y].forEach(function(p){
+      html += '<div class="timeline-poem" onclick="showPoemDetail(\'' + escHtml(p.title) + '\')" title="' + escHtml(p.title) + ' (' + p.date + ')">' + escHtml(p.title) + '</div>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('timelineContainer').innerHTML = html;
+}
+
+// 诗人详情
+function showPoetDetail(name){
+  var poet = poetIndex.find(function(p){return p.name === name});
+  if(!poet) return;
+  document.getElementById('poetModalTitle').textContent = poet.name + '（' + poet.dynasty + '·' + poet.type + '）';
+  var html = '<div style="margin-bottom:16px;font-size:15px;color:var(--ink-light)">被引用 ' + poet.count + ' 次</div>';
+  html += '<div style="font-size:14px">';
+  poet.references.forEach(function(r){
+    html += '<div style="padding:10px 0;border-bottom:1px solid rgba(139,94,60,0.08)">' +
+      '<div style="font-weight:600;color:var(--accent)">' + escHtml(r.poem_title) + ' <span style="font-weight:400;color:var(--ink-light);font-size:13px">' + r.poem_date + '</span></div>' +
+      '<div style="color:var(--ink-light);margin-top:4px;font-size:13px">来源: ' + r.book + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  document.getElementById('poetModalContent').innerHTML = html;
+  document.getElementById('poetModal').classList.add('active');
+}
+
+// 典故详情
+function showAllusionDetail(name){
+  var al = allusionIndex.find(function(a){return a.name === name});
+  if(!al) return;
+  document.getElementById('allusionModalTitle').textContent = '《' + al.name + '》';
+  var html = '<div style="margin-bottom:16px"><span class="al-type">' + escHtml(al.type) + '</span> <span style="margin-left:8px;color:var(--ink-light);font-size:14px">引用 ' + al.references.length + ' 次</span></div>';
+  html += '<div style="font-size:14px">';
+  al.references.forEach(function(r){
+    html += '<div style="padding:12px 0;border-bottom:1px solid rgba(139,94,60,0.08)">' +
+      '<div style="font-weight:600;color:var(--accent)">' + escHtml(r.poem_title) + ' <span style="font-weight:400;color:var(--ink-light);font-size:13px">' + r.poem_date + '</span></div>' +
+      '<div style="color:var(--ink-light);margin-top:4px;font-size:13px">来源: ' + r.book + '</div>' +
+      (r.context ? '<div style="color:var(--ink);margin-top:6px;font-size:13px;line-height:1.6;background:rgba(139,94,60,0.05);padding:8px;border-radius:8px">' + escHtml(r.context) + '</div>' : '') +
+    '</div>';
+  });
+  html += '</div>';
+  document.getElementById('allusionModalContent').innerHTML = html;
+  document.getElementById('allusionModal').classList.add('active');
+}
+
+// 关闭模态
+function closeModal(id){
+  document.getElementById(id).classList.remove('active');
+}
+
+// 诗篇详情
+var lastSectionBeforePoem = '';
+
+function showPoemDetail(title){
+  var poem = masterData.find(function(p){return p.title === title});
+  if(!poem) return;
+  lastSectionBeforePoem = currentSection;
+  document.getElementById('poemModalTitle').textContent = poem.title;
+  var html = '<div style="margin-bottom:8px;font-size:13px;color:var(--ink-light)">' + (poem.date || '') + ' · ' + (poem.book || '') + '</div>';
+  html += '<div style="font-family:var(--serif-zh);font-size:16px;line-height:2;margin-bottom:16px">';
+  var lines = poem.content && poem.content.length > 0 ? poem.content : (poem.verses || []);
+  lines.forEach(function(v){
+    html += '<p style="margin:0 0 8px 0">' + escHtml(v) + '</p>';
+  });
+  html += '</div>';
+  if(poem.annotation){
+    html += '<div style="font-size:13px;color:var(--ink-light);line-height:1.8;background:rgba(139,94,60,0.06);padding:12px;border-radius:8px;margin-top:8px">' +
+      '<div style="font-weight:600;color:var(--accent);margin-bottom:4px">注释</div>' + escHtml(poem.annotation) + '</div>';
+  }
+  document.getElementById('poemModalContent').innerHTML = html;
+  document.getElementById('poemModal').classList.add('active');
+}
+
+function closePoemDetail(){
+  document.getElementById('poemModal').classList.remove('active');
+  if(lastSectionBeforePoem) showSection(lastSectionBeforePoem);
+}
+
+// Section切换
+function showSection(name){
+  currentSection = name;
+  var sections = ['overview','allusions','poets','timeline','search'];
+  sections.forEach(function(s){
+    var el = document.getElementById('sec-' + s);
+    if(el) el.classList.toggle('active', s === name);
+  });
+  // 更新tab状态
+  document.querySelectorAll('.nav-tab').forEach(function(tab){
+    tab.classList.toggle('active', tab.textContent.trim() === {
+      overview:'概览', allusions:'典故', poets:'诗人', timeline:'时间线', search:'搜索'
+    }[name]);
+  });
+}
+
+// 搜索
+function performSearch(){
+  var query = document.getElementById('searchInput').value.trim().toLowerCase();
+  if(!query) return;
+
+  var results = [];
+
+  // 搜索诗篇
+  masterData.forEach(function(p){
+    var titleMatch = p.title.toLowerCase().includes(query);
+    var contentMatch = (p.content || []).some(function(c){return c.toLowerCase().includes(query)});
+    var annoMatch = (p.annotation || '').toLowerCase().includes(query);
+    if(titleMatch || contentMatch || annoMatch){
+      var snippet = '';
+      if(titleMatch) snippet = p.title;
+      else if(annoMatch) snippet = (p.annotation || '').substring(0, 120) + '...';
+      else if(p.content && p.content.length > 0) snippet = p.content[0];
+
+      results.push({
+        type: '诗篇',
+        title: p.title,
+        date: p.date || '',
+        book: p.book,
+        snippet: highlightText(snippet, query)
+      });
+    }
+  });
+
+  // 搜索典故
+  allusionIndex.forEach(function(a){
+    if(a.name.toLowerCase().includes(query)){
+      results.push({
+        type: '典故',
+        title: a.name,
+        date: '',
+        book: '',
+        snippet: a.type + '，引用 ' + a.references.length + ' 次'
+      });
+    }
+  });
+
+  // 搜索诗人
+  poetIndex.forEach(function(p){
+    if(p.name.toLowerCase().includes(query)){
+      results.push({
+        type: '诗人',
+        title: p.name + '（' + p.dynasty + '）',
+        date: '',
+        book: '',
+        snippet: p.type + '，被引用 ' + p.count + ' 次'
+      });
+    }
+  });
+
+  document.getElementById('searchCount').textContent = results.length + ' 条';
+  document.getElementById('searchResults').innerHTML = results.length > 0 ?
+    results.map(function(r){
+      return '<div class="search-result">' +
+        '<div class="sr-title">' + r.snippet + '</div>' +
+        '<div class="sr-date">' + r.type + (r.book ? ' · ' + r.book : '') + (r.date ? ' · ' + r.date : '') + '</div>' +
+      '</div>';
+    }).join('') :
+    '<div style="text-align:center;padding:40px;color:var(--ink-light)">未找到相关结果</div>';
+
+  showSection('search');
+}
+
+// 高亮
+function highlightText(text, query){
+  if(!query) return escHtml(text);
+  var re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return escHtml(text).replace(re, '<span class="sr-highlight">$1</span>');
+}
+
+// HTML转义
+function escHtml(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 搜索框回车
+document.getElementById('searchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter') performSearch();
+});
+
+// 模态框外部点击关闭
+document.querySelectorAll('.modal-overlay').forEach(function(m){
+  m.addEventListener('click', function(e){
+    if(e.target === m) m.classList.remove('active');
+  });
+});
+
+// 检查本地文件是否存在，优先使用本地
+window.addEventListener('load', function(){
+  // 旧 BGM 加载逻辑已废弃，改用 Web Audio 合成（见顶部 bgm 对象）
+  // 保留此 hook 以便未来扩展
+});
+</script>
+</body>
+</html>
