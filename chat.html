@@ -225,6 +225,7 @@
 <script>
 // 初始化
 let isLoaded = false;
+let isSending = false;
 
 function init() {
   // 等待 data.js 加载
@@ -247,18 +248,27 @@ function sendQuick(text) {
 function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || isSending) return;
   
   addUserMessage(text);
   input.value = '';
   
   showTyping();
+  isSending = true;
+  document.getElementById('sendBtn').disabled = true;
   
-  setTimeout(() => {
+  getAIReply(text).then(reply => {
     hideTyping();
-    const reply = generateReply(text);
+    // 简单转义HTML中的换行和markdown
     addBotMessage(reply);
-  }, 800 + Math.random() * 600);
+    isSending = false;
+    document.getElementById('sendBtn').disabled = false;
+  }).catch(err => {
+    hideTyping();
+    addBotMessage(err || '哎呀，出了点问题，请稍后再试 😅');
+    isSending = false;
+    document.getElementById('sendBtn').disabled = false;
+  });
 }
 
 function addUserMessage(text) {
