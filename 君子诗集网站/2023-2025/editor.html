@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>君子诗集 · 下册编辑器</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;background:#f5edd6;color:#3d2e1a;overflow:hidden}
+
+  .layout{display:flex;height:100vh}
+
+  /* 左侧列表 */
+  .sidebar{width:280px;flex-shrink:0;background:#ede4d0;border-right:1px solid #c4b899;display:flex;flex-direction:column}
+  .sidebar-head{padding:12px;border-bottom:1px solid #c4b899}
+  .sidebar-head h2{font-size:15px;margin-bottom:8px;color:#8b5e3c}
+  .search{width:100%;padding:7px 10px;border:1px solid #c4b899;border-radius:5px;background:#f5edd6;color:#3d2e1a;font-size:13px;outline:none}
+  .search:focus{border-color:#8b5e3c}
+  .vol-section{flex:1;overflow-y:auto;padding-bottom:80px}
+  .vol-group{border-bottom:1px solid #c4b899}
+  .vol-head{padding:8px 28px 8px 12px;background:rgba(139,94,60,0.08);cursor:pointer;display:flex;justify-content:space-between;font-size:13px;font-weight:600;position:relative}
+  .vol-head:hover{background:rgba(139,94,60,0.15)}
+  .vol-head::after{content:'▼';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:#8b7e6a;transition:transform 0.2s}
+  .vol-head.collapsed::after{transform:translateY(-50%) rotate(-90deg)}
+  .vol-count{font-size:11px;color:#8b7e6a}
+  .poem-list{display:none}
+  .poem-list.open{display:block}
+  .poem-item{padding:7px 12px 7px 24px;cursor:pointer;font-size:12px;border-bottom:1px solid rgba(92,74,50,0.06)}
+  .poem-item:hover{background:rgba(92,74,50,0.06)}
+  .poem-item.active{background:rgba(139,94,60,0.2)}
+  .poem-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .poem-date{font-size:10px;color:#8b7e6a;margin-top:1px}
+  .sidebar-foot{padding:10px;border-top:1px solid #c4b899;display:flex;gap:8px;position:relative;z-index:50;background:#ede4d0}
+  .btn{flex:1;padding:8px;border:none;border-radius:5px;cursor:pointer;font-size:13px;transition:background 0.2s}
+  .btn-r{background:#8b5e3c;color:#fff}
+  .btn-r:hover{background:#a07050}
+  .btn-g{background:#c4b899;color:#5c4a32}
+  .btn-g:hover{background:#b0a484}
+
+  /* 中间编辑 */
+  .editor{padding:16px;overflow-y:auto;flex:1}
+  .editor-head{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #c4b899}
+  .editor-head h1{font-size:18px;color:#8b5e3c;margin-bottom:4px}
+  .editor-head .idx{font-size:11px;color:#8b7e6a}
+
+  .form{margin-bottom:14px}
+  .form label{display:block;font-size:12px;color:#8b7e6a;margin-bottom:4px}
+  .form input,.form select,.form textarea{width:100%;padding:8px 10px;border:1px solid #c4b899;border-radius:5px;background:#ede4d0;color:#3d2e1a;font-size:13px;outline:none;font-family:inherit}
+  .form input:focus,.form select:focus,.form textarea:focus{border-color:#8b5e3c}
+  .form-row{display:flex;gap:10px}
+  .form-row .form{flex:1}
+
+  /* 正文编辑器 */
+  .content-ta{min-height:300px;line-height:1.8;font-family:"Noto Serif SC","SimSun",serif;font-size:15px;resize:vertical;white-space:pre-wrap}
+
+  /* 注释 */
+  .annot-ta{min-height:80px;line-height:1.6;font-family:"Noto Serif SC",serif;resize:vertical}
+
+  .btns{display:flex;gap:10px;margin-top:16px;margin-bottom:40px}
+  .btns .btn{padding:10px}
+
+  /* 右侧预览 */
+  .preview{background:#e8ddc8;color:#3d2e1a;padding:16px;overflow-y:auto;width:320px;flex-shrink:0;font-family:"Noto Serif SC",serif}
+  .preview-head{font-size:13px;color:#8b5e3c;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(201,169,110,0.3)}
+  .p-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:6px}
+  .p-date{font-size:11px;text-align:center;color:rgba(238,223,199,0.7);margin-bottom:16px}
+  .p-content{font-size:17px;line-height:2.2;white-space:pre-wrap;text-align:center}
+  .p-content.prose{text-align:left;text-indent:2em;line-height:1.9}
+  .p-annot{margin-top:20px;padding:12px;background:rgba(139,94,60,0.08);border:1px solid rgba(139,94,60,0.2);border-radius:6px;font-size:13px;line-height:1.7;white-space:pre-wrap}
+  .p-annot-title{font-size:11px;color:rgba(139,94,60,0.6);margin-bottom:4px}
+
+  /* 拖拽条 */
+  .resizer{width:6px;background:#c4b899;cursor:col-resize;position:relative;z-index:10;flex-shrink:0}
+  .resizer:hover{background:#e94560}
+
+  .status{position:fixed;bottom:0;left:0;right:0;background:#ede4d0;border-top:1px solid #c4b899;padding:6px 16px;font-size:11px;color:#8b7e6a;display:flex;justify-content:space-between;z-index:100}
+  .layout{padding-bottom:28px}
+
+  /* 表情选择器 */
+  .emoji-btn{background:none;border:1px solid #c4b899;border-radius:4px;cursor:pointer;font-size:16px;padding:2px 6px;vertical-align:middle;margin-left:6px;transition:all 0.2s}
+  .emoji-btn:hover{border-color:#8b5e3c;background:rgba(139,94,60,0.08)}
+  .emoji-picker{display:none;background:#f5edd6;border:1px solid #c4b899;border-radius:8px;padding:8px;max-width:360px;max-height:180px;overflow-y:auto;margin-bottom:6px;flex-wrap:wrap;gap:2px}
+  .emoji-picker.show{display:flex}
+  .emoji-item{font-size:20px;cursor:pointer;padding:4px;border-radius:4px;transition:background 0.15s;user-select:none}
+  .emoji-item:hover{background:rgba(139,94,60,0.15)}
+
+  /* 导出弹窗 */
+  .modal{display:none;position:fixed;inset:0;background:rgba(92,74,50,0.5);z-index:200;justify-content:center;align-items:center}
+  .modal.show{display:flex}
+  .modal-box{background:#ede4d0;border:1px solid #c4b899;border-radius:8px;width:90%;max-width:700px;max-height:80vh;display:flex;flex-direction:column}
+  .modal-head{padding:12px 16px;border-bottom:1px solid #c4b899;display:flex;justify-content:space-between;align-items:center}
+  .modal-body{flex:1;padding:12px;overflow-y:auto}
+  .modal-ta{width:100%;height:350px;background:#f5edd6;color:#3d2e1a;border:1px solid #c4b899;border-radius:5px;padding:10px;font-family:monospace;font-size:11px;resize:none}
+  .modal-foot{padding:12px 16px;border-top:1px solid #c4b899;display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- 左侧列表 -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <h2>君子诗集 · 下册</h2>
+      <input type="text" class="search" id="listSearch" placeholder="搜索标题或日期...">
+    </div>
+    <div class="vol-section" id="volSection"></div>
+    <div class="sidebar-foot">
+      <button class="btn btn-r" onclick="newPoem()">+ 新增</button>
+      <button class="btn btn-g" onclick="exportData()">导出</button>
+    </div>
+  </div>
+
+  <!-- 中间编辑 -->
+  <div class="editor">
+    <div class="editor-head">
+      <h1 id="editorTitle">编辑诗篇</h1>
+      <span class="idx" id="poemIdx"></span>
+    </div>
+
+    <div class="form-row">
+      <div class="form" style="flex:1.5">
+        <label>诗题</label>
+        <input type="text" id="editTitle" placeholder="输入诗题">
+      </div>
+      <div class="form">
+        <label>日期</label>
+        <input type="text" id="editDate" placeholder="2021年04月14日">
+      </div>
+      <div class="form">
+        <label>卷别</label>
+        <select id="editVolume">
+          <option value="序">序</option>
+          <option value="卷五 · 二零二三">卷五 · 二零二三</option>
+          <option value="卷六 · 二零二四">卷六 · 二零二四</option>
+          <option value="卷七 · 二零二五">卷七 · 二零二五</option>
+          <option value="附录">附录</option>
+          <option value="后记">后记</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form">
+      <label>正文 <small style="color:#666;font-weight:400">直接编辑全文，支持换行</small> <button type="button" class="emoji-btn" onclick="toggleEmoji()">😀</button></label>
+      <div class="emoji-picker" id="emojiPicker"></div>
+      <textarea class="content-ta" id="editContent" placeholder="输入诗句正文..."></textarea>
+    </div>
+
+    <div class="form">
+      <label>注释 <small style="color:#666;font-weight:400">单独显示在正文下方</small></label>
+      <textarea class="annot-ta" id="editAnnot" placeholder="输入注释（可选）..."></textarea>
+    </div>
+
+    <div class="btns">
+      <button class="btn btn-r" onclick="save()">保存修改 (Ctrl+S)</button>
+      <button class="btn btn-g" onclick="del()">删除</button>
+    </div>
+  </div>
+
+  <!-- 拖拽条 -->
+  <div class="resizer" id="resizer"></div>
+
+  <!-- 右侧预览 -->
+  <div class="preview" id="previewPanel">
+    <div class="preview-head">实时预览</div>
+    <div id="previewBox">
+      <div style="text-align:center;opacity:0.5;margin-top:80px">选择一首诗或创建新诗<br>查看预览效果</div>
+    </div>
+  </div>
+</div>
+
+<div class="status">
+  <span id="statusText">就绪</span>
+  <span id="statInfo">共 0 首</span>
+</div>
+
+<!-- 导出弹窗 -->
+<div class="modal" id="exportModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>导出数据</h3>
+      <button class="btn btn-g" style="width:auto;padding:4px 10px" onclick="closeModal()">关闭</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:8px;font-size:12px;color:#8b7e6a">下载后替换 君子诗集_下册_data.js，刷新网页即可生效。</p>
+      <textarea class="modal-ta" id="exportTa" readonly></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-g" onclick="copyExport()">复制</button>
+      <button class="btn btn-r" onclick="downloadExport()">下载</button>
+    </div>
+  </div>
+</div>
+
+<script src="君子诗集_下册_data.js"></script>
+<script>
+let curIdx = -1, isNew = false, unsaved = false;
+
+// 表情选择器
+const EMOJIS = ['😀','😂','🤣','😊','😍','🥰','😘','😋','🤗','🤔','😎','🥺','😢','😭','😤','😡','🤯','😨','😰','😥','😓','🤭','🤫','🤥','😶','😐','😑','😏','😒','🙄','😬','😮','😲','😳','🥵','🥶','😱','😨','😰','😥','😓','🤮','🤧','😇','🥳','🤠','🤡','🤑','🤪','😜','😝','🤓','😈','👿','💀','☠️','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🙈','🙉','🙊','💋','💌','💘','💝','💖','💗','💓','💞','💕','💟','❣️','💔','❤️','🧡','💛','💚','💙','💜','🤎','🖤','🤍','💯','💢','💥','💫','💦','💨','🕳️','💣','💬','🗨️','🗯️','💭','💤','👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','🌹','🌺','🌸','🌼','🌻','🌷','🌱','🌿','🍀','🍁','🍂','🍃','🌏','🌙','⭐','🌟','✨','⚡','🔥','❄️','☀️','⛅','🌈','☔','💧','🌊','🏠','🏯','🏰','⛪','🕌','🕍','⛩️','🕋','⛲','⛺','🌁','🌃','🌄','🌅','🌆','🌇','🌉','♨️','🎠','🎡','🎢','💈','🎪','🎭','🎨','🎬','🎤','🎧','🎼','🎵','🎶','🎹','🥁','🎷','🎺','🎸','🪕','🎻','♟️','🎯','🎳','🎮','🎰','🎲','🧩','🪀','🪁','🎯','🏆','🎖️','🏅','🥇','🥈','🥉','⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','⛸️','🎣','🤿','🎽','🎿','🛷','🥌'];
+function toggleEmoji(){document.getElementById('emojiPicker').classList.toggle('show')}
+function initEmojiPicker(){
+  const box=document.getElementById('emojiPicker');
+  EMOJIS.forEach(e=>{const s=document.createElement('span');s.className='emoji-item';s.textContent=e;s.onclick=()=>{const ta=document.getElementById('editContent');const start=ta.selectionStart;const end=ta.selectionEnd;const val=ta.value;ta.value=val.slice(0,start)+e+val.slice(end);ta.selectionStart=ta.selectionEnd=start+e.length;ta.focus();unsaved=true;preview()};box.appendChild(s)});
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.emoji-btn')&&!e.target.closest('.emoji-picker'))document.getElementById('emojiPicker').classList.remove('show')});
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+  renderList();
+  updateStat();
+  initEmojiPicker();
+  ['editTitle','editDate','editVolume','editContent','editAnnot'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => { unsaved = true; preview(); });
+  });
+  document.getElementById('listSearch').addEventListener('input', e => filter(e.target.value));
+  document.addEventListener('keydown', e => {
+    if((e.ctrlKey||e.metaKey) && e.key==='s'){ e.preventDefault(); save(); }
+  });
+});
+
+// 渲染列表
+function renderList(){
+  const box = document.getElementById('volSection'); box.innerHTML = '';
+  const order = ['序','卷五 · 二零二三','卷六 · 二零二四','卷七 · 二零二五','附录','后记'];
+  const map = {};
+  poemsData.forEach((p,i) => { const v=p.volume||'附录'; if(!map[v])map[v]=[]; map[v].push({...p,_i:i}); });
+  order.forEach(vol => {
+    if(!map[vol]) return;
+    const g = document.createElement('div'); g.className='vol-group';
+    const h = document.createElement('div'); h.className='vol-head';
+    h.innerHTML = `<span>${vol}</span><span class="vol-count">${map[vol].length}首</span>`;
+    const ul = document.createElement('div'); ul.className='poem-list open';
+    map[vol].forEach(p => {
+      const el = document.createElement('div'); el.className='poem-item';
+      el.dataset.i = p._i; el.dataset.title = p.title; el.dataset.date = p.date||'';
+      el.innerHTML = `<div class="poem-title">${p.title}</div><div class="poem-date">${p.date||'无日期'}</div>`;
+      el.onclick = () => select(p._i);
+      ul.appendChild(el);
+    });
+    h.onclick = () => ul.classList.toggle('open');
+    g.appendChild(h); g.appendChild(ul); box.appendChild(g);
+  });
+}
+
+// 选择诗
+function select(i){
+  if(unsaved && curIdx>=0 && !confirm('当前有未保存的修改，确定切换吗？')) return;
+  curIdx = i; isNew = false; unsaved = false;
+  const p = poemsData[i];
+  document.getElementById('editTitle').value = p.title||'';
+  document.getElementById('editDate').value = p.date||'';
+  document.getElementById('editVolume').value = p.volume||'附录';
+  // 正文：合并 verses 数组为换行分隔的字符串
+  const verses = (p.verses && p.verses.length>0) ? p.verses : (p.content && p.content.length>0 ? p.content : ['']);
+  document.getElementById('editContent').value = verses.join('\n');
+  document.getElementById('editAnnot').value = (p.annotation && p.annotation!=='null') ? p.annotation : '';
+  document.getElementById('editorTitle').textContent = '编辑：' + p.title;
+  document.getElementById('poemIdx').textContent = `第 ${i+1} / ${poemsData.length} 首`;
+  document.querySelectorAll('.poem-item').forEach(el => el.classList.remove('active'));
+  const active = document.querySelector(`.poem-item[data-i="${i}"]`);
+  if(active) active.classList.add('active');
+  preview(); stat('已加载：' + p.title);
+}
+
+// 预览
+function preview(){
+  const title = document.getElementById('editTitle').value || '未命名';
+  const date = document.getElementById('editDate').value;
+  const content = document.getElementById('editContent').value;
+  const annot = document.getElementById('editAnnot').value;
+
+  let html = `<div class="p-title">${esc(title)}</div>`;
+  if(date) html += `<div class="p-date">${esc(date)}</div>`;
+
+  // 判断是否散文（长句或含多个句号）
+  const isProse = content.length > 50 || (content.match(/。/g)||[]).length > 2;
+  const cls = isProse ? 'p-content prose' : 'p-content';
+  html += `<div class="${cls}">${esc(content)}</div>`;
+
+  if(annot && annot!=='null'){
+    html += `<div class="p-annot-title">注释</div><div class="p-annot">${esc(annot)}</div>`;
+  }
+
+  document.getElementById('previewBox').innerHTML = html;
+}
+
+// 新建
+function newPoem(){
+  if(unsaved && curIdx>=0 && !confirm('当前有未保存的修改，确定切换吗？')) return;
+  curIdx = -1; isNew = true; unsaved = false;
+  document.getElementById('editTitle').value = '';
+  document.getElementById('editDate').value = '';
+  document.getElementById('editVolume').value = '卷五 · 二零二三';
+  document.getElementById('editContent').value = '';
+  document.getElementById('editAnnot').value = '';
+  document.getElementById('editorTitle').textContent = '新增诗篇';
+  document.getElementById('poemIdx').textContent = '';
+  document.querySelectorAll('.poem-item').forEach(el => el.classList.remove('active'));
+  preview(); stat('创建新诗中...');
+  document.getElementById('editTitle').focus();
+}
+
+// 保存
+function save(){
+  const title = document.getElementById('editTitle').value.trim();
+  if(!title){ alert('请输入诗题'); return; }
+  const date = document.getElementById('editDate').value.trim();
+  const volume = document.getElementById('editVolume').value;
+  const annot = document.getElementById('editAnnot').value.trim();
+  const content = document.getElementById('editContent').value.trim();
+  if(!content){ alert('请输入正文'); return; }
+
+  // 将正文按换行分割为数组
+  const verses = content.split('\n').map(s => s.trim()).filter(s => s);
+
+  const poem = {
+    title, date, volume, author:'君子', type:'原创',
+    verses,
+    annotation: annot || null
+  };
+
+  if(isNew){ poemsData.push(poem); curIdx = poemsData.length-1; isNew = false; }
+  else { poemsData[curIdx] = poem; }
+  unsaved = false;
+  renderList(); select(curIdx);
+  stat('已保存：' + title);
+}
+
+// 删除
+function del(){
+  if(curIdx < 0) return;
+  const p = poemsData[curIdx];
+  if(!confirm(`确定删除《${p.title}》？不可撤销。`)) return;
+  poemsData.splice(curIdx, 1); curIdx = -1; unsaved = false;
+  renderList();
+  document.getElementById('editTitle').value = '';
+  document.getElementById('editDate').value = '';
+  document.getElementById('editContent').value = '';
+  document.getElementById('editAnnot').value = '';
+  document.getElementById('editorTitle').textContent = '编辑诗篇';
+  document.getElementById('poemIdx').textContent = '';
+  document.getElementById('previewBox').innerHTML = '<div style="text-align:center;opacity:0.5;margin-top:80px">选择一首诗或创建新诗<br>查看预览效果</div>';
+  stat('已删除');
+}
+
+// 搜索
+function filter(q){
+  const items = document.querySelectorAll('.poem-item');
+  const groups = document.querySelectorAll('.vol-group');
+  if(!q){ items.forEach(i => i.style.display=''); groups.forEach(g => g.style.display=''); return; }
+  const Q = q.toLowerCase();
+  items.forEach(el => {
+    const m = el.dataset.title.toLowerCase().includes(Q) || el.dataset.date.toLowerCase().includes(Q);
+    el.style.display = m ? '' : 'none';
+  });
+  groups.forEach(g => {
+    g.style.display = g.querySelectorAll('.poem-item:not([style*="none"])').length ? '' : 'none';
+  });
+}
+
+// 导出
+function exportData(){
+  const order = ['序','卷五 · 二零二三','卷六 · 二零二四','卷七 · 二零二五','附录','后记'];
+  const groups = {};
+  poemsData.forEach(p => { const v=p.volume||'附录'; if(!groups[v])groups[v]=[]; groups[v].push(p); });
+  const chaptersData = order.filter(v => groups[v]).map(v => ({name:v, poems:groups[v]}));
+  const clean = poemsData.map(p => { const o={...p}; delete o._poemsDataIndex; return o; });
+  const js = '// 君子诗集 · 下册数据\n// 生成: '+new Date().toLocaleString()+'\n// 共 '+poemsData.length+' 首\n\nvar poemsData = '+JSON.stringify(clean,null,2)+';\n\nvar chaptersData = '+JSON.stringify(chaptersData,null,2)+';\n';
+  document.getElementById('exportTa').value = js;
+  document.getElementById('exportModal').classList.add('show');
+  stat('导出数据已生成');
+}
+function closeModal(){ document.getElementById('exportModal').classList.remove('show'); }
+function copyExport(){ const ta=document.getElementById('exportTa'); ta.select(); document.execCommand('copy'); stat('已复制'); }
+function downloadExport(){
+  const blob = new Blob([document.getElementById('exportTa').value], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.style.display='none'; a.href=url;
+  a.download = '君子诗集_下册_data.js'; document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+  stat('已下载');
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function stat(msg){ if(msg) document.getElementById('statusText').textContent = msg; document.getElementById('statInfo').textContent = '共 '+poemsData.length+' 首'; }
+function updateStat(){ stat(); }
+
+// 拖拽调节预览栏宽度
+(function(){
+  const resizer = document.getElementById('resizer');
+  const preview = document.getElementById('previewPanel');
+  if(!resizer || !preview) return;
+  let startX, startW;
+  resizer.addEventListener('mousedown', e => {
+    e.preventDefault();
+    startX = e.clientX;
+    startW = preview.offsetWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const onMove = e2 => {
+      const dx = startX - e2.clientX; // 向左拖=变宽
+      const newW = Math.max(200, Math.min(800, startW + dx));
+      preview.style.width = newW + 'px';
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+})();
+</script>
+</body>
+</html>

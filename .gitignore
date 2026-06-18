@@ -1,2 +1,26 @@
+# 忽略大文件和临时文件
 bgm.mp3
-.gitignore_temp/
+可可托海的牧羊人.mp3
+*.mp3
+
+# 忽略杂项目录和文件
+.dumate/
+poetry_book/
+2022图片/
+全集/
+校对（诗）/
+~$*
+
+# 忽略旧版html文件（根目录散落的）
+君子的诗.html
+君子诗集.html
+君子诗集_主页.html
+君子诗集_根目录版.html
+君子诗集_配图测试.html
+君子诗集_配图版.html
+
+# 忽略文档和图片文件
+*.pdf
+*.docx
+*.txt
+ScreenShot*.png

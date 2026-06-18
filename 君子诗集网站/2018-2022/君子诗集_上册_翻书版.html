@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>君子的诗 · 上册 · 翻书版</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5eed7;
+  --paper-rgb:245,238,215;
+  --ink:#2a1e13;
+  --ink-rgb:42,30,19;
+  --serif:"Noto Serif SC",serif;
+  --sans:"Noto Sans SC",sans-serif;
+  --spine:#8b7355;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#3a2f25;font-family:var(--sans)}
+
+/* 桌面纹理 */
+body{background:linear-gradient(135deg,#3a2f25 0%,#2a2018 50%,#3a2f25 100%)}
+
+/* 书本容器 */
+#book-wrap{display:flex;justify-content:center;align-items:center;width:100%;height:100%;perspective:2500px}
+#book{position:relative;width:min(92vw,1100px);height:min(86vh,720px);transform-style:preserve-3d;transition:transform 0.3s}
+
+/* 单页 */
+.page{position:absolute;width:50%;height:100%;top:0;overflow:hidden;backface-visibility:hidden;transition:transform 0.8s cubic-bezier(0.645,0.045,0.355,1);transform-origin:left center;cursor:pointer;background:var(--paper);color:var(--ink);box-shadow:inset -3px 0 12px rgba(0,0,0,0.08)}
+.page.front{left:50%;transform:rotateY(0deg);z-index:1;border-radius:0 6px 6px 0;border-left:1px solid rgba(139,115,85,0.2)}
+.page.back{left:0;transform:rotateY(0deg);z-index:1;border-radius:6px 0 0 6px;border-right:1px solid rgba(139,115,85,0.2)}
+
+/* 翻页状态 */
+.page.flipped{transform:rotateY(-180deg)}
+.page.flipped.front{z-index:0}
+.page.flipped.back{z-index:0}
+
+/* 书脊 */
+#spine{position:absolute;left:50%;top:0;width:4px;height:100%;background:linear-gradient(90deg,rgba(139,115,85,0.3),rgba(139,115,85,0.6),rgba(139,115,85,0.3));z-index:100;transform:translateX(-2px);pointer-events:none}
+
+/* 页面内容 */
+.page-inner{padding:40px 36px;height:100%;overflow-y:auto;display:flex;flex-direction:column}
+.page-inner::-webkit-scrollbar{width:4px}
+.page-inner::-webkit-scrollbar-thumb{background:rgba(42,30,19,0.2);border-radius:2px}
+
+/* 封面 */
+.cover-front,.cover-back{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;height:100%;background:linear-gradient(160deg,#5c4a32 0%,#3a2f25 50%,#5c4a32 100%);color:var(--paper);padding:40px}
+.cover-front::before,.cover-back::before{content:'';position:absolute;inset:16px;border:2px solid rgba(238,223,199,0.2);border-radius:4px;pointer-events:none}
+.cover-title{font-family:var(--serif);font-weight:900;font-size:clamp(36px,5vw,56px);letter-spacing:0.08em;margin-bottom:12px}
+.cover-sub{font-family:var(--serif);font-size:clamp(16px,2.5vw,24px);opacity:0.7;letter-spacing:0.15em;margin-bottom:40px}
+.cover-author{font-family:var(--sans);font-size:clamp(14px,1.8vw,18px);opacity:0.6;letter-spacing:0.3em}
+.cover-desc{font-family:var(--sans);font-size:clamp(13px,1.5vw,16px);opacity:0.55;line-height:2;margin-top:30px;max-width:320px}
+.cover-stats{display:flex;gap:30px;margin-top:40px}
+.cover-stat-num{font-family:var(--serif);font-weight:700;font-size:clamp(28px,3.5vw,42px);text-align:center}
+.cover-stat-label{font-family:var(--sans);font-size:12px;opacity:0.5;letter-spacing:0.15em;text-align:center;margin-top:4px}
+
+/* 诗歌页 */
+.poem-page-title{font-family:var(--serif);font-size:clamp(22px,2.8vw,32px);font-weight:700;text-align:center;margin-bottom:8px;color:var(--ink)}
+.poem-page-date{font-family:var(--sans);font-size:clamp(11px,1.2vw,13px);text-align:center;opacity:0.5;margin-bottom:24px;letter-spacing:0.1em}
+.poem-page-body{font-family:var(--serif);font-size:clamp(16px,1.8vw,20px);line-height:2.2;text-align:center;flex:1;white-space:pre-wrap;word-break:keep-all;overflow-wrap:break-word}
+.poem-page-annot{margin-top:20px;padding:14px;background:rgba(139,115,85,0.06);border:1px solid rgba(139,115,85,0.15);border-radius:8px;font-family:var(--sans);font-size:clamp(12px,1.1vw,14px);line-height:1.9;opacity:0.8}
+.poem-page-annot-label{font-size:11px;opacity:0.5;margin-bottom:6px;letter-spacing:0.1em}
+
+/* 章节页 */
+.chapter-page{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;height:100%}
+.chapter-page-name{font-family:var(--serif);font-size:clamp(28px,3.5vw,42px);font-weight:700;margin-bottom:16px;color:var(--ink)}
+.chapter-page-count{font-family:var(--sans);font-size:clamp(13px,1.5vw,16px);opacity:0.5;letter-spacing:0.15em}
+.chapter-page-line{width:60px;height:2px;background:rgba(42,30,19,0.2);margin:24px auto 0;border-radius:1px}
+
+/* 序言页 */
+.preface-page{font-family:var(--serif);font-size:clamp(14px,1.4vw,17px);line-height:2.2;text-indent:2em;flex:1}
+.preface-page p{margin-bottom:12px}
+.preface-page .sign{text-align:right;text-indent:0;margin-top:24px}
+
+/* 页码 */
+.page-num{font-family:var(--sans);font-size:11px;opacity:0.35;text-align:center;margin-top:auto;padding-top:16px;letter-spacing:0.1em}
+
+/* 导航按钮 */
+.nav-btns{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:16px;z-index:200}
+.nav-btn{width:48px;height:48px;border-radius:50%;border:1px solid rgba(238,223,199,0.3);background:rgba(42,30,19,0.8);color:var(--paper);cursor:pointer;font-size:18px;transition:all 0.3s;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.nav-btn:hover{background:rgba(42,30,19,0.95);transform:scale(1.1)}
+.nav-btn:disabled{opacity:0.3;cursor:not-allowed;transform:none}
+
+/* 进度 */
+#progress{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-family:var(--sans);font-size:11px;color:rgba(238,223,199,0.4);z-index:200;letter-spacing:0.1em}
+
+/* 提示 */
+#hint{position:fixed;top:16px;right:16px;font-family:var(--sans);font-size:11px;color:rgba(238,223,199,0.3);z-index:200;letter-spacing:0.1em}
+
+/* 首页按钮 */
+#home-btn{position:fixed;top:16px;left:16px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(238,223,199,0.2);background:rgba(42,30,19,0.7);color:rgba(238,223,199,0.6);cursor:pointer;font-size:14px;z-index:200;display:flex;align-items:center;justify-content:center;transition:all 0.3s;backdrop-filter:blur(8px)}
+#home-btn:hover{background:rgba(42,30,19,0.95);color:var(--paper)}
+
+@media(max-width:768px){
+  #book{width:96vw;height:90vh}
+  .page-inner{padding:24px 18px}
+  .cover-title{font-size:32px}
+  .cover-sub{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<div id="book-wrap">
+  <div id="book">
+    <div id="spine"></div>
+  </div>
+</div>
+
+<div class="nav-btns">
+  <button class="nav-btn" id="prevBtn" onclick="goPrev()">◀</button>
+  <button class="nav-btn" id="nextBtn" onclick="goNext()">▶</button>
+</div>
+
+<div id="progress"></div>
+<div id="hint">← → 翻页 · 点击页面翻页</div>
+<button id="home-btn" onclick="goToPage(0)">☰</button>
+
+<script src="君子诗集_上册_data.js"></script>
+<script>
+// 构建页面数据
+const pages = [];
+
+// 封面（正面）
+pages.push({type:'cover-front'});
+
+// 序
+const preface = chaptersData.find(c => c.name === '序');
+if(preface && preface.poems[0]){
+  const p = preface.poems[0];
+  const verses = (p.content && p.content.length > 0) ? p.content : (p.verses || []);
+  pages.push({type:'preface', title:p.title, verses});
+}
+
+// 各章节
+const mainChapters = chaptersData.filter(c => c.name !== '序');
+mainChapters.forEach(chapter => {
+  // 章节页
+  pages.push({type:'chapter', name:chapter.name, count:chapter.poems.length});
+  // 每首诗一页
+  chapter.poems.forEach(poem => {
+    const content = (poem.content && poem.content.length > 0) ? poem.content : (poem.verses || []);
+    pages.push({
+      type:'poem',
+      title:poem.title,
+      date:poem.date || '',
+      content,
+      annotation:poem.annotation || null,
+      volume:chapter.name
+    });
+  });
+});
+
+// 封底
+pages.push({type:'cover-back'});
+
+let currentSpread = 0; // 当前展开的第几对页（0=封面+第1页）
+const totalSpreads = Math.ceil(pages.length / 2);
+
+function renderBook(){
+  const book = document.getElementById('book');
+  // 保留书脊
+  const spine = document.getElementById('spine');
+  book.innerHTML = '';
+  book.appendChild(spine);
+
+  // 渲染所有页对
+  for(let i = 0; i < pages.length; i += 2){
+    const leftIdx = i;
+    const rightIdx = i + 1;
+
+    // 左页（背面）
+    if(leftIdx < pages.length){
+      const leftPage = document.createElement('div');
+      leftPage.className = 'page back';
+      if(leftIdx < currentSpread * 2) leftPage.classList.add('flipped');
+      leftPage.dataset.idx = leftIdx;
+      leftPage.onclick = () => goPrev();
+      const inner = document.createElement('div');
+      inner.className = 'page-inner';
+      renderPageContent(pages[leftIdx], inner, leftIdx);
+      leftPage.appendChild(inner);
+      book.appendChild(leftPage);
+    }
+
+    // 右页（正面）
+    if(rightIdx < pages.length){
+      const rightPage = document.createElement('div');
+      rightPage.className = 'page front';
+      if(rightIdx < currentSpread * 2) rightPage.classList.add('flipped');
+      rightPage.dataset.idx = rightIdx;
+      rightPage.onclick = () => goNext();
+      const inner = document.createElement('div');
+      inner.className = 'page-inner';
+      renderPageContent(pages[rightIdx], inner, rightIdx);
+      rightPage.appendChild(inner);
+      book.appendChild(rightPage);
+    }
+  }
+
+  updateNav();
+}
+
+function renderPageContent(page, container, idx){
+  switch(page.type){
+    case 'cover-front':
+      container.className = 'cover-front';
+      const mainPoems = poemsData.filter(p => p.volume !== '附录');
+      const totalChars = mainPoems.reduce((acc,p) => acc + p.verses.reduce((vacc,v) => vacc + v.length, 0), 0);
+      container.innerHTML = `
+        <div class="cover-title">君子的诗</div>
+        <div class="cover-sub">上册 · 2018-2022</div>
+        <div class="cover-author">刘 方 君</div>
+        <div class="cover-desc">一个矿山工人的诗意人生。在钢铁与矿石之间，他用诗歌浇灌心灵的花园。</div>
+        <div class="cover-stats">
+          <div><div class="cover-stat-num">${mainPoems.length}</div><div class="cover-stat-label">诗篇</div></div>
+          <div><div class="cover-stat-num">${(totalChars/1000).toFixed(1)}k</div><div class="cover-stat-label">字</div></div>
+        </div>
+      `;
+      break;
+
+    case 'cover-back':
+      container.className = 'cover-back';
+      container.innerHTML = `
+        <div class="cover-title" style="font-size:clamp(24px,3vw,36px)">君子之诗</div>
+        <div class="cover-sub" style="font-size:clamp(14px,1.8vw,18px)">如其人</div>
+        <div class="cover-desc" style="margin-top:40px">朴实而有格<br>寻常而有味</div>
+      `;
+      break;
+
+    case 'preface':
+      const prefaceHtml = page.verses.map((v, i) => {
+        if(i >= page.verses.length - 2) return `<p class="sign">${esc(v)}</p>`;
+        return `<p>${esc(v)}</p>`;
+      }).join('');
+      container.innerHTML = `
+        <div class="poem-page-title">${esc(page.title)}</div>
+        <div class="preface-page">${prefaceHtml}</div>
+        <div class="page-num">${idx}</div>
+      `;
+      break;
+
+    case 'chapter':
+      container.innerHTML = `
+        <div class="chapter-page">
+          <div class="chapter-page-name">${esc(page.name)}</div>
+          <div class="chapter-page-count">共 ${page.count} 首</div>
+          <div class="chapter-page-line"></div>
+        </div>
+        <div class="page-num">${idx}</div>
+      `;
+      break;
+
+    case 'poem':
+      const bodyText = page.content.join('\n');
+      let poemHtml = `<div class="poem-page-title">${esc(page.title)}</div>`;
+      if(page.date) poemHtml += `<div class="poem-page-date">${esc(page.date)}</div>`;
+      poemHtml += `<div class="poem-page-body">${esc(bodyText)}</div>`;
+      if(page.annotation){
+        poemHtml += `<div class="poem-page-annot"><div class="poem-page-annot-label">注释</div>${esc(page.annotation)}</div>`;
+      }
+      poemHtml += `<div class="page-num">${idx}</div>`;
+      container.innerHTML = poemHtml;
+      break;
+  }
+}
+
+function goNext(){
+  if(currentSpread >= totalSpreads - 1) return;
+  currentSpread++;
+  renderBook();
+}
+
+function goPrev(){
+  if(currentSpread <= 0) return;
+  currentSpread--;
+  renderBook();
+}
+
+function goToPage(spread){
+  currentSpread = spread;
+  renderBook();
+}
+
+function updateNav(){
+  document.getElementById('prevBtn').disabled = currentSpread <= 0;
+  document.getElementById('nextBtn').disabled = currentSpread >= totalSpreads - 1;
+  document.getElementById('progress').textContent = `${currentSpread + 1} / ${totalSpreads}`;
+}
+
+// 键盘导航
+addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight' || e.key === ' ') goNext();
+  if(e.key === 'ArrowLeft') goPrev();
+  if(e.key === 'Home') goToPage(0);
+  if(e.key === 'End') goToPage(totalSpreads - 1);
+});
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// 初始化
+renderBook();
+</script>
+</body>
+</html>
