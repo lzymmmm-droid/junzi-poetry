@@ -456,11 +456,17 @@ function renderPoets(){
   }).join('');
 }
 
-// 时间线
+  // 时间线（按年份 + 卷八·亲情补遗独立分组）
 function renderTimeline(){
   var years = {};
+  var vol8Poems = [];
   masterData.forEach(function(p){
     if(!p.date) return;
+    // 卷八·亲情补遗单独分组，放在2025和2026之间
+    if(p.volume && p.volume.indexOf('卷八') !== -1 && p.volume.indexOf('亲情补遗') !== -1){
+      vol8Poems.push(p);
+      return;
+    }
     // 支持多种日期格式：2023-01-01、2023年1月、约2023年等
     var yearMatch = p.date.match(/(\d{4})/);
     if(!yearMatch) return;
@@ -470,13 +476,31 @@ function renderTimeline(){
   });
   var sorted = Object.keys(years).sort();
   var html = '';
+  var inserted = false;
   sorted.forEach(function(y){
     html += '<div class="timeline-year"><h3>' + y + '</h3><div class="timeline-poems">';
     years[y].forEach(function(p){
       html += '<div class="timeline-poem" onclick="showPoemDetail(\'' + escHtml(p.title) + '\')" title="' + escHtml(p.title) + ' (' + p.date + ')">' + escHtml(p.title) + '</div>';
     });
     html += '</div></div>';
+    // 在2025年后插入亲情补遗
+    if(y === '2025' && vol8Poems.length > 0 && !inserted){
+      html += '<div class="timeline-year"><h3>亲情补遗</h3><div class="timeline-poems">';
+      vol8Poems.forEach(function(p){
+        html += '<div class="timeline-poem" onclick="showPoemDetail(\'' + escHtml(p.title) + '\')" title="' + escHtml(p.title) + ' (' + p.date + ')">' + escHtml(p.title) + '</div>';
+      });
+      html += '</div></div>';
+      inserted = true;
+    }
   });
+  // 如果2025年不存在，放在最后
+  if(!inserted && vol8Poems.length > 0){
+    html += '<div class="timeline-year"><h3>亲情补遗</h3><div class="timeline-poems">';
+    vol8Poems.forEach(function(p){
+      html += '<div class="timeline-poem" onclick="showPoemDetail(\'' + escHtml(p.title) + '\')" title="' + escHtml(p.title) + ' (' + p.date + ')">' + escHtml(p.title) + '</div>';
+    });
+    html += '</div></div>';
+  }
   document.getElementById('timelineContainer').innerHTML = html;
 }
 
