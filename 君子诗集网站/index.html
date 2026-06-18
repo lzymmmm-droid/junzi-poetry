@@ -642,16 +642,25 @@ function performSearch(){
     var annoMatch = (p.annotation || '').toLowerCase().includes(query);
     if(titleMatch || contentMatch || annoMatch){
       var snippet = '';
-      if(titleMatch) snippet = p.title;
-      else if(annoMatch) snippet = (p.annotation || '').substring(0, 120) + '...';
-      else if(p.content && p.content.length > 0) snippet = p.content[0];
+      var weight = 0;
+      if(titleMatch){
+        snippet = p.title;
+        weight = 3; // 诗名匹配优先级最高
+      } else if(annoMatch){
+        snippet = (p.annotation || '').substring(0, 120) + '...';
+        weight = 1;
+      } else if(p.content && p.content.length > 0){
+        snippet = p.content[0];
+        weight = 2;
+      }
 
       results.push({
         type: '诗篇',
         title: p.title,
         date: p.date || '',
         book: p.book,
-        snippet: highlightText(snippet, query)
+        snippet: highlightText(snippet, query),
+        weight: weight
       });
     }
   });
@@ -664,7 +673,8 @@ function performSearch(){
         title: a.name,
         date: '',
         book: '',
-        snippet: a.type + '，引用 ' + a.references.length + ' 次'
+        snippet: a.type + '，引用 ' + a.references.length + ' 次',
+        weight: 2
       });
     }
   });
@@ -677,10 +687,14 @@ function performSearch(){
         title: p.name + '（' + p.dynasty + '）',
         date: '',
         book: '',
-        snippet: p.type + '，被引用 ' + p.count + ' 次'
+        snippet: p.type + '，被引用 ' + p.count + ' 次',
+        weight: 2
       });
     }
   });
+
+  // 排序：按权重降序，诗名匹配优先
+  results.sort(function(a, b){ return b.weight - a.weight; });
 
   document.getElementById('searchCount').textContent = results.length + ' 条';
   document.getElementById('searchResults').innerHTML = results.length > 0 ?
