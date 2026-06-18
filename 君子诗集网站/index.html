@@ -461,7 +461,10 @@ function renderTimeline(){
   var years = {};
   masterData.forEach(function(p){
     if(!p.date) return;
-    var year = p.date.substring(0, 4);
+    // 支持多种日期格式：2023-01-01、2023年1月、约2023年等
+    var yearMatch = p.date.match(/(\d{4})/);
+    if(!yearMatch) return;
+    var year = yearMatch[1];
     if(!years[year]) years[year] = [];
     years[year].push(p);
   });
